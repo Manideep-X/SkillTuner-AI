@@ -13,8 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "user_table")
-public class User {
+@Table(name = "users_table")
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class User {
     @Column(name = "active_resume_id")
     private long activeResumeId;
 
-    public User(long id, String firstName, String lastName, String email, String password, LocalDateTime creationTime,
+    public Users(long id, String firstName, String lastName, String email, String password, LocalDateTime creationTime,
             LocalDateTime updationTime, long activeResumeId) {
         this.id = id;
         this.firstName = firstName;
