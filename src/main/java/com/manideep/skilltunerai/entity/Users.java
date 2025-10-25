@@ -1,15 +1,19 @@
 package com.manideep.skilltunerai.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -41,11 +45,14 @@ public class Users {
     private LocalDateTime updationTime;
 
     @Column(name = "active_resume_id")
-    private long activeResumeId;
+    private Long activeResumeId;
 
-    public Users(long id, String firstName, String lastName, String email, String password, LocalDateTime creationTime,
-            LocalDateTime updationTime, long activeResumeId) {
-        this.id = id;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Resume> resumes = new ArrayList<>();
+
+    public Users() {
+    }
+    public Users(String firstName, String lastName, String email, String password, LocalDateTime creationTime, LocalDateTime updationTime, Long activeResumeId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -95,8 +102,22 @@ public class Users {
     public long getActiveResumeId() {
         return activeResumeId;
     }
-    public void setActiveResumeId(long activeResumeId) {
+    public void setActiveResumeId(Long activeResumeId) {
         this.activeResumeId = activeResumeId;
+    }
+
+    public List<Resume> getResumes() {
+        return resumes;
+    }
+
+    // Helper methods
+    public void addResume(Resume resume) {
+        resumes.add(resume);
+        resume.setUser(this);
+    }
+    public void removeResume(Resume resume) {
+        resumes.remove(resume);
+        resume.setUser(null);
     }
 
 }
