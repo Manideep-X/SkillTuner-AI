@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.manideep.skilltunerai.mapper.ListToJsonConverter;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,21 +29,25 @@ public class AnalysisResult {
     private String feedback;
 
     @Column(columnDefinition = "jsonb")
+    @Convert(converter = ListToJsonConverter.class)
     private List<String> strengths;
 
     @Column(columnDefinition = "jsonb")
+    @Convert(converter = ListToJsonConverter.class)
     private List<String> improvements;
-
+    
     @Column(name = "missing_skills", columnDefinition = "jsonb")
+    @Convert(converter = ListToJsonConverter.class)
     private List<String> missingSkills;
 
     @Column(name = "creation_time", updatable = false)
     @CreationTimestamp
     private LocalDateTime creationTime;
 
-    public AnalysisResult(long id, int matchScore, String feedback, List<String> strengths, List<String> improvements,
+    public AnalysisResult() {
+    }
+    public AnalysisResult(int matchScore, String feedback, List<String> strengths, List<String> improvements,
             List<String> missingSkills, LocalDateTime creationTime) {
-        this.id = id;
         this.matchScore = matchScore;
         this.feedback = feedback;
         this.strengths = strengths;
