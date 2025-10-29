@@ -9,7 +9,7 @@ import com.manideep.skilltunerai.entity.Users;
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
     // Optional is used for explicitly handling null return case (recommended)
-    // Internally query: select * from table_user where email = ?1;
+    // Internal query: select * from table_user where email = ?1;
     Optional<Users> findByEmail(String email);
 
 }

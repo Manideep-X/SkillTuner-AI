@@ -23,6 +23,9 @@ public class Resume {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
+    @Column(name = "resume_title", nullable = false, unique = true)
+    private String resumeTitle;
+
     @Column(name = "resume_url", nullable = false)
     private String resumeUrl;
 
@@ -38,7 +41,8 @@ public class Resume {
 
     public Resume() {
     }
-    public Resume(String resumeUrl, String content) {
+    public Resume(String resumeTitle, String resumeUrl, String content) {
+        this.resumeTitle = resumeTitle;
         this.resumeUrl = resumeUrl;
         this.content = content;
     }
@@ -47,6 +51,13 @@ public class Resume {
         return id;
     }
 
+    public String getResumeTitle() {
+        return resumeTitle;
+    }
+    public void setResumeTitle(String resumeTitle) {
+        this.resumeTitle = resumeTitle;
+    }
+    
     public String getResumeUrl() {
         return resumeUrl;
     }
