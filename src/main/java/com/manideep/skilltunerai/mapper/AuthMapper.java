@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.manideep.skilltunerai.dto.SigninResponseDTO;
 import com.manideep.skilltunerai.dto.SignupRequestDTO;
+import com.manideep.skilltunerai.dto.UpdateUserRequestDTO;
 import com.manideep.skilltunerai.entity.Users;
 
 @Component
@@ -24,7 +25,6 @@ public class AuthMapper {
         users.setLastName(signupRequestDTO.getLastName());
         users.setEmail(signupRequestDTO.getEmail());
         users.setPassword(passwordEncoder.encode(signupRequestDTO.getPassword()));
-        users.setActiveResumeId(null);
 
         return users;
 
@@ -38,12 +38,20 @@ public class AuthMapper {
         signinResponseDTO.setFirstName(users.getFirstName());
         signinResponseDTO.setLastName(users.getLastName());
         signinResponseDTO.setEmail(users.getEmail());
-        signinResponseDTO.setActiveResumeId(users.getActiveResumeId());
         signinResponseDTO.setCreationTime(users.getCreationTime());
         signinResponseDTO.setUpdationTime(users.getUpdationTime());
         signinResponseDTO.setJwtToken(jwtToken);
 
         return signinResponseDTO;
+
+    }
+
+    public Users updateUserToUsersObj(UpdateUserRequestDTO updateUserRequestDTO, Users users) {
+
+        users.setFirstName(updateUserRequestDTO.getFirstName());
+        users.setLastName(updateUserRequestDTO.getLastName());
+
+        return users;
 
     }
 
