@@ -44,22 +44,18 @@ public class Users {
     @UpdateTimestamp
     private LocalDateTime updationTime;
 
-    @Column(name = "active_resume_id")
-    private Long activeResumeId;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Resume> resumes = new ArrayList<>();
 
     public Users() {
     }
-    public Users(String firstName, String lastName, String email, String password, LocalDateTime creationTime, LocalDateTime updationTime, Long activeResumeId) {
+    public Users(String firstName, String lastName, String email, String password, LocalDateTime creationTime, LocalDateTime updationTime) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.creationTime = creationTime;
         this.updationTime = updationTime;
-        this.activeResumeId = activeResumeId;
     }
 
     public long getId() {
@@ -100,13 +96,6 @@ public class Users {
 
     public LocalDateTime getUpdationTime() {
         return updationTime;
-    }
-
-    public long getActiveResumeId() {
-        return activeResumeId;
-    }
-    public void setActiveResumeId(Long activeResumeId) {
-        this.activeResumeId = activeResumeId;
     }
 
     public List<Resume> getResumes() {

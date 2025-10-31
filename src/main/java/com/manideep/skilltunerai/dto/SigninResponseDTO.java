@@ -8,20 +8,18 @@ public class SigninResponseDTO {
     private String lastName;
     private String firstName;
     private String email;
-    private Long activeResumeId;
     private LocalDateTime creationTime;
     private LocalDateTime updationTime;
     private String jwtToken;
     
     public SigninResponseDTO() {
     }
-    public SigninResponseDTO(long id, String lastName, String firstName, String email, Long activeResumeId,
+    public SigninResponseDTO(long id, String lastName, String firstName, String email,
             LocalDateTime creationTime, LocalDateTime updationTime, String jwtToken) {
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;
-        this.activeResumeId = activeResumeId;
         this.creationTime = creationTime;
         this.updationTime = updationTime;
         this.jwtToken = jwtToken;
@@ -53,13 +51,6 @@ public class SigninResponseDTO {
     }
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    public Long getActiveResumeId() {
-        return activeResumeId;
-    }
-    public void setActiveResumeId(Long activeResumeId) {
-        this.activeResumeId = activeResumeId;
     }
     
     public LocalDateTime getCreationTime() {
