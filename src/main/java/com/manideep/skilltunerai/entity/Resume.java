@@ -14,16 +14,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "resume_table")
+@Table(
+    name = "resume_table", 
+    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "resumeTitle"})
+)
 public class Resume {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @Column(name = "resume_title", nullable = false, unique = true)
+    @Column(name = "resume_title", nullable = false)
     private String resumeTitle;
 
     @Column(name = "resume_url", nullable = false)
