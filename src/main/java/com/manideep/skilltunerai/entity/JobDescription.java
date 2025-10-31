@@ -80,5 +80,8 @@ public class JobDescription {
     public AnalysisResult getAnalysisResult() {
         return analysisResult;
     }
+    public void setAnalysisResult(AnalysisResult analysisResult) {
+        this.analysisResult = analysisResult;
+    }
 
 }
