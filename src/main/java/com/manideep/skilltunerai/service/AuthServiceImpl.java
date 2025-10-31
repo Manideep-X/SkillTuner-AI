@@ -6,11 +6,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.manideep.skilltunerai.dto.SigninRequestDTO;
 import com.manideep.skilltunerai.dto.SigninResponseDTO;
 import com.manideep.skilltunerai.dto.SignupRequestDTO;
+import com.manideep.skilltunerai.dto.UpdatePasswordDTO;
+import com.manideep.skilltunerai.dto.UpdateUserRequestDTO;
 import com.manideep.skilltunerai.entity.Users;
 import com.manideep.skilltunerai.exception.DuplicateValueException;
 import com.manideep.skilltunerai.mapper.AuthMapper;
@@ -27,13 +30,15 @@ public class AuthServiceImpl implements AuthService {
     private final AuthMapper authMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(UsersRepository usersRepository, AuthMapper authMapper,
-            JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+            JwtUtil jwtUtil, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;
         this.authMapper = authMapper;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -89,6 +94,35 @@ public class AuthServiceImpl implements AuthService {
         return usersRepository.findByEmail(email)
             .orElseThrow(
                 () -> new EntityNotFoundException("User not found with email: " + email));
+        
+    }
+
+    @Override
+    public void updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO) {
+        
+        // Maps the update user DTO to users entity object
+        Users updatedUser = authMapper.updateUserToUsersObj(updateUserRequestDTO, currentlyLoggedinUser());
+
+        // Save the updated user object to the database
+        usersRepository.save(updatedUser);
+        
+    }
+
+    @Override
+    public void updatePasswordOfCurrUser(UpdatePasswordDTO updatePasswordDTO) {
+        
+        Users currUser = currentlyLoggedinUser();
+
+        if (!passwordEncoder.matches(updatePasswordDTO.getExistingPassword(), currUser.getPassword())) {
+            throw new IllegalArgumentException("Existing password you typed is incorrect!");
+        }
+
+        if (!updatePasswordDTO.getNewPassword().equals(updatePasswordDTO.getRepeatNewPassword())) {
+            throw new IllegalArgumentException("New password didn't matched with the repeated one!");
+        }
+
+        currUser.setPassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
+        usersRepository.save(currUser);
         
     }
 

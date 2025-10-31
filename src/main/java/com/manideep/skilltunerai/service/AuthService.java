@@ -5,6 +5,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import com.manideep.skilltunerai.dto.SigninRequestDTO;
 import com.manideep.skilltunerai.dto.SigninResponseDTO;
 import com.manideep.skilltunerai.dto.SignupRequestDTO;
+import com.manideep.skilltunerai.dto.UpdatePasswordDTO;
+import com.manideep.skilltunerai.dto.UpdateUserRequestDTO;
 import com.manideep.skilltunerai.entity.Users;
 import com.manideep.skilltunerai.exception.DuplicateValueException;
 
@@ -24,5 +26,11 @@ public interface AuthService {
 
     // Method for getting the user entity by its email address
     Users usersEntityByItsEmail(String email) throws EntityNotFoundException;
+
+    // Method to update the name of currently logged in user
+    void updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO);
+
+    // Method to update the password of currently logged in user
+    void updatePasswordOfCurrUser(UpdatePasswordDTO updatePasswordDTO);
 
 }
