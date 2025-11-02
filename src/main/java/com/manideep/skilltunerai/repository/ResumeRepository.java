@@ -1,5 +1,6 @@
 package com.manideep.skilltunerai.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +10,12 @@ import com.manideep.skilltunerai.entity.Users;
 
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
-    // Find resume by it's unique title
+    // Find resume by it's unique title for a user
     // Internal query: select * from resume_table where resume_title = ?1 and user_id = ?2;
     Optional<Resume> findByResumeTitleAndUser(String resumeTitle, Users user);
+
+    // Find all resumes belongs to a user
+    // Internal query: select * from resume_table where user_id = ?1;
+    List<Resume> findAllByUser(Users user);
 
 }
