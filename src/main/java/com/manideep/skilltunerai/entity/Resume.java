@@ -33,6 +33,9 @@ public class Resume {
     @Column(name = "resume_url", nullable = false)
     private String resumeUrl;
 
+    @Column(name = "resume_extension", nullable = false)
+    private String resumeExtension;
+
     @Column(nullable = false)
     private String content;
 
@@ -45,9 +48,10 @@ public class Resume {
 
     public Resume() {
     }
-    public Resume(String resumeTitle, String resumeUrl, String content) {
+    public Resume(String resumeTitle, String resumeUrl, String resumeExtension, String content) {
         this.resumeTitle = resumeTitle;
         this.resumeUrl = resumeUrl;
+        this.resumeExtension = resumeExtension;
         this.content = content;
     }
 
@@ -67,6 +71,13 @@ public class Resume {
     }
     public void setResumeUrl(String resumeUrl) {
         this.resumeUrl = resumeUrl;
+    }
+    
+    public String getResumeExtension() {
+        return resumeExtension;
+    }
+    public void setResumeExtension(String resumeExtension) {
+        this.resumeExtension = resumeExtension;
     }
     
     public String getContent() {
