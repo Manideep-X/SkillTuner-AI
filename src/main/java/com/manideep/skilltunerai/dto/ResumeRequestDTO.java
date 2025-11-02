@@ -6,14 +6,12 @@ public class ResumeRequestDTO {
 
     private String resumeTitle;
     private MultipartFile resumeFile;
-    private boolean isResumeActive;
     
     public ResumeRequestDTO() {
     }
-    public ResumeRequestDTO(String resumeTitle, MultipartFile resumeFile, boolean isResumeActive) {
+    public ResumeRequestDTO(String resumeTitle, MultipartFile resumeFile) {
         this.resumeTitle = resumeTitle;
         this.resumeFile = resumeFile;
-        this.isResumeActive = isResumeActive;
     }
 
     public String getResumeTitle() {
@@ -28,13 +26,6 @@ public class ResumeRequestDTO {
     }
     public void setResumeFile(MultipartFile resumeFile) {
         this.resumeFile = resumeFile;
-    }
-
-    public boolean isResumeActive() {
-        return isResumeActive;
-    }
-    public void setResumeActive(boolean isResumeActive) {
-        this.isResumeActive = isResumeActive;
     }
 
 }
