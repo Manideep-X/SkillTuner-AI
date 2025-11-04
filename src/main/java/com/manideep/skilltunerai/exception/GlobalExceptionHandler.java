@@ -74,10 +74,10 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(IOException.class)
+    @ExceptionHandler({IOException.class, FileUploadException.class})
     public ResponseEntity<Map<String, String>> handleIOException(IOException exception) {
 
-        logger.error("Unable to read the file: ", exception);
+        logger.error("Unable to read or upload the file: ", exception);
         // HTTP status code: 400
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
             "message", exception.getMessage()
@@ -85,12 +85,18 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler({PersistenceException.class, Exception.class})
+    @ExceptionHandler({PersistenceException.class, Exception.class, JacksonParsingException.class})
     public ResponseEntity<Map<String, String>> handleErrorWhileSavingInDB(Exception exception) {
 
         // HTTP status code: 500
         if (exception instanceof PersistenceException) {
             logger.error("JPA pesistence error: ", exception);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "message", exception.getMessage()
+            ));
+        }
+        else if (exception instanceof JacksonParsingException) {
+            logger.error("Error while parsing from JSON to DTO: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "message", exception.getMessage()
             ));
