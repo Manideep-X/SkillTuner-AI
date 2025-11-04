@@ -102,9 +102,10 @@ public class Resume {
     }
 
     // Helper methods
-    public void addJD(JobDescription job) {
+    public JobDescription addJD(JobDescription job) {
         jobDescriptions.add(job);
         job.setResume(this);
+        return job;
     }
     public void removeJD(JobDescription job) {
         jobDescriptions.remove(job);
