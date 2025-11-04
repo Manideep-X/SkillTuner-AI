@@ -18,4 +18,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     // Internal query: select * from resume_table where user_id = ?1;
     List<Resume> findAllByUser(Users user);
 
+    // Find resume with the help of resume ID and user ID
+    // Internal query: select * from resume_table where id = ?1 user_id = ?2;
+    Optional<Resume> findByIdAndUserId(long id, long userId);
+
 }

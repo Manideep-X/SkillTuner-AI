@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.manideep.skilltunerai.dto.JobDesRequestDTO;
 import com.manideep.skilltunerai.dto.JobDesResponseDTO;
+import com.manideep.skilltunerai.entity.JobDescription;
+import com.manideep.skilltunerai.entity.Resume;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
@@ -15,6 +17,9 @@ public interface JobDesService {
 
     // Returns the DTO that can be send to the frontend
     JobDesResponseDTO getsJDByItsId(long id) throws EntityNotFoundException;
+
+    // Returns job description if the given resume is linked with it.
+    JobDescription getJDIfLinkedWithResume(long jdId, Resume resume) throws EntityNotFoundException;
 
     // Returns job titles entered for one resume
     List<String> getsJobTitlesByResumeId(long resumeId);
