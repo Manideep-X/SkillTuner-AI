@@ -26,6 +26,7 @@ public class PdfDocParserUtil {
             String text = textStripper.getText(pdDocument).trim();
 
             // If no text, then likely an scanned image PDF or empty PDF
+            // Also, way too less text resume will not be accepted
             if (text.isEmpty() || text.length() < 50) {
                 throw new FileLoadingException("The uploaded PDF seems empty, way less text or image-based!");
             }
