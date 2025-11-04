@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,7 +65,12 @@ public class ResumeServiceImpl implements ResumeService {
 
         // Checking the file's extention whether it matches pdf, doc, or docx
         String fileExtention = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
-        if (fileName == null || !fileExtention.equals("pdf") || !fileExtention.equals("doc") || !fileExtention.equals("docx"))
+        if (
+            fileName == null ||
+            !(  fileExtention.equals("pdf") || 
+                fileExtention.equals("doc") || 
+                fileExtention.equals("docx"))
+        )
             throw new IllegalArgumentException("Only PDF, DOC, and DOCX file extensions are supported!");
             
         // Gets the texts from the resume by parsing it
@@ -92,22 +98,19 @@ public class ResumeServiceImpl implements ResumeService {
 
     // Method to upload the resume to Cloudinary and return the details including URL
     @SuppressWarnings("unchecked")
-    private Map<String, Object> uploadResume(MultipartFile resume) throws IOException, PersistenceException {
+    private Map<String, Object> uploadResume(MultipartFile resume) throws FileUploadException {
 
         try {
-
             return cloudinary.uploader().upload(
-                resume.getBytes(), 
+                resume.getInputStream(), 
                 ObjectUtils.asMap(
                     "folder", "resume/", // puts every resume in the resume folder
                     "resource_type", "auto" // automatically detects the file type
                 )
             );
             
-        } catch (IOException e) {
-            throw new IOException("Error occured while reading the uploaded file!");
         } catch (Exception e) {
-            throw new PersistenceException("Error occured while uploading the file to Cloudinary!");
+            throw new FileUploadException("Error occured while uploading or reading file!");
         }
 
     }
@@ -116,7 +119,7 @@ public class ResumeServiceImpl implements ResumeService {
     private String parseTheResume(MultipartFile resume, String fileExtension) throws FileLoadingException, IOException {
         
         // Gets the file name
-        String fileName = resume.getOriginalFilename().toString();
+        String fileName = resume.getOriginalFilename();
         
         if (fileName == null) throw new IOException("Invalid name of the file!");
 
@@ -143,11 +146,11 @@ public class ResumeServiceImpl implements ResumeService {
     public void deleteAResume(long id) throws SecurityException {
         
         Users currUser = authService.currentlyLoggedinUser();
-        Resume resume = getResumeById(id);
-
-        // Checking if the resume belongs to the user
-        if (!doesResumeByIdExistsForCurrUser(id)) {
-            throw new SecurityException("Can't delete the resume that doesn't exists!");
+        Resume resume = new Resume();
+        try {
+            resume = getResumeByIdForCurrUser(id);
+        } catch (Exception e) {
+            throw new SecurityException("Can't delete resume that doesn't exists!");
         }
         
         // This will save the user and cascade save the resume as well
@@ -160,42 +163,21 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public Resume getResumeById(long id) throws EntityNotFoundException {
-        
-        // Need to check if the resume exists for current user
-        if (!doesResumeByIdExistsForCurrUser(id)) {
-            throw new EntityNotFoundException("This resume doesn't exists!");
-        }
-        
-        return resumeRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("This resume doesn't exists!"));
+    public Resume getResumeByIdForCurrUser(long id) throws EntityNotFoundException {
+        Users currUser = authService.currentlyLoggedinUser();
+        return resumeRepository.findByIdAndUserId(id, currUser.getId())
+            .orElseThrow(() -> new EntityNotFoundException("This resume doesn't exists"));
     }
 
     @Override
-    public List<Resume> getResumesOfCurrUser() throws EntityNotFoundException {
+    public List<Resume> getResumesOfCurrUser() {
         return resumeRepository
             .findAllByUser(authService.currentlyLoggedinUser());
     }
 
     @Override
     public ResumeResponseDTO getResumeResponseDTO(long id) {
-        return resumeMapper.resumeObjToResumeRes(getResumeById(id));
-    }
-
-    @Override
-    public boolean doesResumeByIdExistsForCurrUser(long resumeId) throws EntityNotFoundException {
-        
-        Users currUser = authService.currentlyLoggedinUser();
-        Resume resume = resumeRepository.findById(resumeId)
-            .orElseThrow(() -> new EntityNotFoundException("This resume doesn't exists!"));
-
-        // This checks if the currently logged-in user have this resume
-        if (resume.getUser().getId() != currUser.getId()) {
-            return false;
-        }
-
-        return true;
-        
+        return resumeMapper.resumeObjToResumeRes(getResumeByIdForCurrUser(id));
     }
 
 }
