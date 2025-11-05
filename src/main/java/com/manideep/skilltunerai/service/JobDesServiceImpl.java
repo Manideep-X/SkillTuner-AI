@@ -14,7 +14,6 @@ import com.manideep.skilltunerai.repository.JobDesRepository;
 import com.manideep.skilltunerai.repository.ResumeRepository;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 
 @Service
 public class JobDesServiceImpl implements JobDesService {
@@ -36,7 +35,7 @@ public class JobDesServiceImpl implements JobDesService {
     // Transactional annotation is added as there are two write operations
     @Override
     @Transactional
-    public void saveJobDescription(JobDesRequestDTO jobDesRequestDTO) throws SecurityException, PersistenceException {
+    public void saveJobDescription(JobDesRequestDTO jobDesRequestDTO) {
         
         // Checks if the resume exists for currently logged-in user or not
         Resume resume = resumeService.getResumeByIdForCurrUser(jobDesRequestDTO.getResumeId());
@@ -47,19 +46,11 @@ public class JobDesServiceImpl implements JobDesService {
         // Add the new job description to the resume entity's job description list, and set this resume to the job desciption's entity
         JobDescription newJD = resume.addJD(jobDescription);
 
-        try {
-            // Forces Hibernate to save immediately the resume to the DB, which cascade saves the job description as well
-            resumeRepository.saveAndFlush(resume);
+        // Forces Hibernate to save immediately the resume to the DB, which cascade saves the job description as well
+        resumeRepository.saveAndFlush(resume);
 
-            // Generates and save the Gemini's response into the database
-            analysisResultService.generateAndSaveResponse(jobDesRequestDTO.getResumeId(), newJD.getId());
-
-        } catch (Exception e) {
-            throw new PersistenceException("Error occured while persisting JD to DB", e);
-        }
-        } catch (Exception e) {
-            throw new PersistenceException("Error occured while persisting JD to DB", e);
-        }
+        // Generates and save the Gemini's response into the database
+        analysisResultService.generateAndSaveResponse(jobDesRequestDTO.getResumeId(), newJD.getId());
         
     }
 
