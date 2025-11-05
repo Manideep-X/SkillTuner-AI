@@ -8,12 +8,11 @@ import com.manideep.skilltunerai.entity.JobDescription;
 import com.manideep.skilltunerai.entity.Resume;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 
 public interface JobDesService {
 
     // Save the job description to the DB
-    void saveJobDescription(JobDesRequestDTO jobDesRequestDTO) throws SecurityException, PersistenceException;
+    void saveJobDescription(JobDesRequestDTO jobDesRequestDTO);
 
     // Returns the DTO that can be send to the frontend
     JobDesResponseDTO getsJDByItsId(long id) throws EntityNotFoundException;
