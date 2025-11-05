@@ -18,5 +18,10 @@
     "name": "gemini.api.key",
     "type": "java.lang.String",
     "description": "A description for 'gemini.api.key'"
+  },
+  {
+    "name": "app.scheduling.timezone",
+    "type": "java.lang.String",
+    "description": "A description for 'app.scheduling.timezone'"
   }
 ]}
