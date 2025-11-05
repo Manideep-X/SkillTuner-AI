@@ -10,6 +10,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.google.genai.errors.ApiException;
+
 import io.jsonwebtoken.io.IOException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
@@ -81,6 +83,17 @@ public class GlobalExceptionHandler {
         // HTTP status code: 400
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
             "message", exception.getMessage()
+        ));
+
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<Map<String, String>> apiExhaustedException(ApiException exception) {
+
+        logger.error("All Gemini models are exhausted: ", exception);
+        // HTTP status code: 429
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of(
+            "message", exception.message()
         ));
 
     }

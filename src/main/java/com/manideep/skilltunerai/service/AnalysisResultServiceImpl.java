@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
+import com.google.genai.errors.ApiException;
 import com.google.genai.types.GenerateContentResponse;
 import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
 import com.manideep.skilltunerai.entity.AnalysisResult;
@@ -22,13 +23,15 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
     private final ResumeService resumeService;
     private final AnalysisMapper analysisMapper;
     private final Client geminiClient;
+    private final GeminiModelManagerService geminiModelManagerService;
 
-    public AnalysisResultServiceImpl(JobDesService jobDesService, ResumeService resumeService, Client geminiClient, AnalysisMapper analysisMapper, JobDesRepository jobDesRepository) {
+    public AnalysisResultServiceImpl(JobDesService jobDesService, ResumeService resumeService, Client geminiClient, AnalysisMapper analysisMapper, JobDesRepository jobDesRepository, GeminiModelManagerService geminiModelManagerService) {
         this.jobDesRepository = jobDesRepository;
         this.jobDesService = jobDesService;
         this.resumeService = resumeService;
         this.analysisMapper = analysisMapper;
         this.geminiClient = geminiClient;
+        this.geminiModelManagerService = geminiModelManagerService;
     }
 
     @Override
@@ -40,17 +43,15 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
         // Need to check if the job description belongs to that resume
         JobDescription jobDescription = jobDesService.getJDIfLinkedWithResume(jdId, resume);
 
-        // Gets prompt and Generates reponse from gemini client's 2.5 flash and 2.5 flash lite model
+        // Gets prompt for generating results
         String prompt = GeminiPromptCreationUtil.createPrompt(
                 resume.getContent(), 
                 jobDescription.getJobTitle(), 
                 jobDescription.getCompanyName(), 
                 jobDescription.getDescription());
         
-        GenerateContentResponse response = geminiClient.models.generateContent(
-                "gemini-2.5-flash",
-                prompt,
-                null);
+        // Getting response from Gemini, and handling API exception
+        GenerateContentResponse response = generateContentResponse(prompt);
 
         // Gets the parsed JSON as DTO
         AnalysisResultResponseDTO responseDTO = parseTheResponse(response.text());
@@ -104,6 +105,37 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
         // Returns the mapped response DTO of the Analysed result entity object
         return analysisMapper.analysisObjToAnalysisResponse(jobDescription.getAnalysisResult());
         
+    }
+
+    private GenerateContentResponse generateContentResponse(String prompt) throws ApiException {
+
+        int diffModelAttempts = 0;
+        
+        // Loop to switch between different models if the current model's tokens are exhausted
+        while (true) {
+        
+            String model = geminiModelManagerService.getCurrGeminiModel();
+            try {
+                // Generate content from current gemini model
+                return geminiClient.models.generateContent(
+                    model, prompt, null);
+            
+            } catch (ApiException e) {
+                
+                // If the current model's token is exhausted, then it will switch to a different model
+                // There are 4 different Gemini models used
+                if ((e.code() == 429 || e.code() == 403) && !geminiModelManagerService.areAllModelsTraversed(diffModelAttempts)) {
+                    
+                    geminiModelManagerService.switchToNextGeminiModel();
+                    diffModelAttempts++;
+                    continue;
+                }
+                // If all of the models are exhausted then it throughs exception
+                throw e;
+            }
+            
+        }
+
     }
 
 }

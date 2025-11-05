@@ -1,8 +1,7 @@
 package com.manideep.skilltunerai.service;
 
+import com.google.genai.errors.ApiException;
 import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
-
-import jakarta.persistence.PersistenceException;
 
 public interface AnalysisResultService {
 
