@@ -3,7 +3,6 @@ package com.manideep.skilltunerai.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.manideep.skilltunerai.dto.JobDesRequestDTO;
 import com.manideep.skilltunerai.dto.JobDesResponseDTO;
@@ -22,19 +21,16 @@ public class JobDesServiceImpl implements JobDesService {
     private final JobDesMapper jobDesMapper;
     private final ResumeService resumeService;
     private final ResumeRepository resumeRepository;
-    private final AnalysisResultService analysisResultService;
 
-    public JobDesServiceImpl(JobDesRepository jobDesRepository, JobDesMapper jobDesMapper, ResumeService resumeService, ResumeRepository resumeRepository, AnalysisResultService analysisResultService) {
+    public JobDesServiceImpl(JobDesRepository jobDesRepository, JobDesMapper jobDesMapper, ResumeService resumeService, ResumeRepository resumeRepository) {
         this.jobDesRepository = jobDesRepository;
         this.jobDesMapper = jobDesMapper;
         this.resumeService = resumeService;
         this.resumeRepository = resumeRepository;
-        this.analysisResultService = analysisResultService;
     }
 
     // Transactional annotation is added as there are two write operations
     @Override
-    @Transactional
     public void saveJobDescription(JobDesRequestDTO jobDesRequestDTO) {
         
         // Checks if the resume exists for currently logged-in user or not
@@ -44,21 +40,23 @@ public class JobDesServiceImpl implements JobDesService {
         JobDescription jobDescription = jobDesMapper.jdRequestToJDObj(jobDesRequestDTO, resume);
 
         // Add the new job description to the resume entity's job description list, and set this resume to the job desciption's entity
-        JobDescription newJD = resume.addJD(jobDescription);
+        resume.addJD(jobDescription);
 
-        // Forces Hibernate to save immediately the resume to the DB, which cascade saves the job description as well
-        resumeRepository.saveAndFlush(resume);
-
-        // Generates and save the Gemini's response into the database
-        analysisResultService.generateAndSaveResponse(jobDesRequestDTO.getResumeId(), newJD.getId());
+        // Saves the resume to the DB, which cascade saves the job description as well
+        resumeRepository.save(resume);
         
     }
 
     @Override
-    public JobDesResponseDTO getsJDByItsId(long id) throws EntityNotFoundException {
+    public JobDesResponseDTO getJdDTOIfLinkedWithResume(long jdId, long resumeId) throws EntityNotFoundException {
         
-        JobDescription jobDescription = jobDesRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("This job description doesn't exists!"));
+        JobDescription jobDescription;
+        try {
+            Resume resume = resumeService.getResumeByIdForCurrUser(resumeId);
+            jobDescription = getJDIfLinkedWithResume(jdId, resume);
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException(e.getMessage());
+        }
 
         return jobDesMapper.jdObjToJdResponse(jobDescription, jobDescription.getResume().getId());
         

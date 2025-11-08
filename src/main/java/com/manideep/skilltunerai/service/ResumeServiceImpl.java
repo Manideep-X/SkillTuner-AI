@@ -1,10 +1,11 @@
 package com.manideep.skilltunerai.service;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,13 +17,13 @@ import com.manideep.skilltunerai.entity.Resume;
 import com.manideep.skilltunerai.entity.Users;
 import com.manideep.skilltunerai.exception.DuplicateValueException;
 import com.manideep.skilltunerai.exception.FileLoadingException;
+import com.manideep.skilltunerai.exception.FileUploadException;
 import com.manideep.skilltunerai.mapper.ResumeMapper;
 import com.manideep.skilltunerai.repository.ResumeRepository;
 import com.manideep.skilltunerai.repository.UsersRepository;
 import com.manideep.skilltunerai.util.PdfDocParserUtil;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 
 @Service
 public class ResumeServiceImpl implements ResumeService {
@@ -41,8 +42,10 @@ public class ResumeServiceImpl implements ResumeService {
         this.cloudinary = cloudinary;
     }
 
+    public static final Logger logger = LoggerFactory.getLogger(ResumeServiceImpl.class);
+
     @Override
-    public void saveResumeAndUpload(ResumeRequestDTO resumeRequestDTO) throws IllegalArgumentException, IOException, PersistenceException {
+    public void saveResumeAndUpload(ResumeRequestDTO resumeRequestDTO) {
 
         // Fetching the currently logged in user
         Users currUser = authService.currentlyLoggedinUser();
@@ -56,18 +59,14 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         // Getting file name from the uploaded resume
-        String fileName = null;
-        try {
-            fileName = resumeRequestDTO.getResumeFile().getOriginalFilename();
-        } catch (Exception e) {
-            throw new IOException("Error occured while reading the uploaded file!");
-        }
-
+        String fileName = resumeRequestDTO.getResumeFile().getOriginalFilename();
+        
         // Checking the file's extention whether it matches pdf, doc, or docx
+        if (fileName == null) {
+            throw new FileLoadingException("Error occured while reading the uploaded file!");
+        }
         String fileExtention = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
-        if (
-            fileName == null ||
-            !(  fileExtention.equals("pdf") || 
+        if (!(  fileExtention.equals("pdf") || 
                 fileExtention.equals("doc") || 
                 fileExtention.equals("docx"))
         )
@@ -83,8 +82,9 @@ public class ResumeServiceImpl implements ResumeService {
         Resume newResume = resumeMapper.resumeReqToResumeObj(
             resumeRequestDTO, 
             uploadDetails.get("secure_url").toString(),
+            uploadDetails.get("public_id").toString(),
             fileExtention,
-            resumeContent, 
+            resumeContent,
             currUser
         );
 
@@ -105,6 +105,7 @@ public class ResumeServiceImpl implements ResumeService {
                 resume.getInputStream(), 
                 ObjectUtils.asMap(
                     "folder", "resume/", // puts every resume in the resume folder
+                    "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename(), // sets unique id for each file in cloudinary
                     "resource_type", "auto" // automatically detects the file type
                 )
             );
@@ -116,12 +117,12 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     // Method to parse the resume and return the content as string
-    private String parseTheResume(MultipartFile resume, String fileExtension) throws FileLoadingException, IOException {
+    private String parseTheResume(MultipartFile resume, String fileExtension) throws FileLoadingException {
         
         // Gets the file name
         String fileName = resume.getOriginalFilename();
         
-        if (fileName == null) throw new IOException("Invalid name of the file!");
+        if (fileName == null) throw new FileLoadingException("Invalid name of the file!");
 
         try {
             switch (fileExtension) {
@@ -132,12 +133,10 @@ public class ResumeServiceImpl implements ResumeService {
                 case "doc":
                     return PdfDocParserUtil.extractTextFromDoc(resume);   
                 default:
-                    throw new IOException("Only PDF, DOC, and DOCX file extensions are supported!");
+                    throw new FileLoadingException("Only PDF, DOC, and DOCX file extensions are supported!");
             }
-        } catch (FileLoadingException e) {
+        } catch (Exception e) {
             throw new FileLoadingException(e.getMessage());
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
         }
         
     }
@@ -146,11 +145,19 @@ public class ResumeServiceImpl implements ResumeService {
     public void deleteAResume(long id) throws SecurityException {
         
         Users currUser = authService.currentlyLoggedinUser();
-        Resume resume = new Resume();
+        Resume resume = null;
         try {
             resume = getResumeByIdForCurrUser(id);
         } catch (Exception e) {
             throw new SecurityException("Can't delete resume that doesn't exists!");
+        }
+
+        // Trys to delete resume from cloudinary
+        try {
+            logger.info("Deleting file from Cloudinary: {}", resume.getCloudinaryPublicId());
+            cloudinary.uploader().destroy(resume.getCloudinaryPublicId(), ObjectUtils.emptyMap());
+        } catch (Exception e) {
+            logger.warn("Failed to delete file from Cloudinary: {} {}", resume.getCloudinaryPublicId(), e);
         }
         
         // This will save the user and cascade save the resume as well
@@ -173,6 +180,16 @@ public class ResumeServiceImpl implements ResumeService {
     public List<Resume> getResumesOfCurrUser() {
         return resumeRepository
             .findAllByUser(authService.currentlyLoggedinUser());
+    }
+    
+    @Override
+    public List<ResumeResponseDTO> getResumeDTOsOfCurrUser() {
+        List<Resume> resumeEntities = getResumesOfCurrUser();
+        List<ResumeResponseDTO> resumeDTOs = new ArrayList<>();
+        for (Resume resume : resumeEntities) {
+            resumeDTOs.add(resumeMapper.resumeObjToResumeRes(resume));
+        }
+        return resumeDTOs;
     }
 
     @Override
