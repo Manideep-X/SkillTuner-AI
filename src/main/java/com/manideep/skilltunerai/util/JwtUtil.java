@@ -44,7 +44,7 @@ public class JwtUtil {
 
     // First need to check if the token's username matches with the userDetails, then if the token expired.
     public Boolean isTokenValid(String token, UserDetails userDetails) {
-        return (getUsername(token).equals(userDetails.getUsername()) && isTokenExpired(token));
+        return (getUsername(token).equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public String generateToken(String username) {
