@@ -24,6 +24,9 @@ public interface AuthService {
     // Method for getting the user entity who is currently signed-in
     Users currentlyLoggedinUser();
 
+    // Method for getting the user details DTO who is currently signed-in
+    SigninResponseDTO currentlyLoggedinUserDTO();
+    
     // Method for getting the user entity by its email address
     Users usersEntityByItsEmail(String email) throws EntityNotFoundException;
 
