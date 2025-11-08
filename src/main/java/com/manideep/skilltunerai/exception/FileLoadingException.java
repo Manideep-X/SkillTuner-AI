@@ -1,8 +1,6 @@
 package com.manideep.skilltunerai.exception;
 
-import java.io.IOException;
-
-public class FileLoadingException extends IOException {
+public class FileLoadingException extends RuntimeException {
 
     public FileLoadingException(String message) {
         super(message);

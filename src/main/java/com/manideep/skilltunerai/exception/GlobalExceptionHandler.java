@@ -90,15 +90,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Map<String, String>> apiExhaustedException(ApiException exception) {
 
-        logger.error("All Gemini models are exhausted: ", exception);
         // HTTP status code: 429
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of(
+        HttpStatus resStatus = HttpStatus.TOO_MANY_REQUESTS;
+        if (exception.code() == 403) {
+            logger.error("Gemini model access permission issue: ", exception);
+            resStatus = HttpStatus.FORBIDDEN;
+        }
+        else 
+            // HTTP status code: 403
+            logger.error("All Gemini models are exhausted: ", exception);
+        
+        return ResponseEntity.status(resStatus).body(Map.of(
             "message", exception.message()
         ));
 
     }
 
-    @ExceptionHandler({PersistenceException.class, Exception.class, JacksonParsingException.class})
+    @ExceptionHandler({PersistenceException.class, JacksonParsingException.class, CloudFileNotFoundException.class, Exception.class})
     public ResponseEntity<Map<String, String>> handleErrorWhileSavingInDB(Exception exception) {
 
         // HTTP status code: 500
@@ -106,7 +114,13 @@ public class GlobalExceptionHandler {
             logger.error("JPA pesistence error: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "message", exception.getMessage()
-            ));
+                ));
+            }
+        else if (exception instanceof CloudFileNotFoundException) {
+            logger.error("Fail to fetch from Cloudinary: ", exception);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "message", exception.getMessage()
+                ));
         }
         else if (exception instanceof JacksonParsingException) {
             logger.error("Error while parsing from JSON to DTO: ", exception);
