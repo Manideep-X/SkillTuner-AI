@@ -15,7 +15,7 @@ public interface JobDesService {
     void saveJobDescription(JobDesRequestDTO jobDesRequestDTO);
 
     // Returns the DTO that can be send to the frontend
-    JobDesResponseDTO getsJDByItsId(long id) throws EntityNotFoundException;
+    JobDesResponseDTO getJdDTOIfLinkedWithResume(long jdId, long resumeId) throws EntityNotFoundException;
 
     // Returns job description if the given resume is linked with it.
     JobDescription getJDIfLinkedWithResume(long jdId, Resume resume) throws EntityNotFoundException;

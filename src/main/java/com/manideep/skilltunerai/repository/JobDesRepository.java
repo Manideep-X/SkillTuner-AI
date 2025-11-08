@@ -15,7 +15,7 @@ public interface JobDesRepository extends JpaRepository<JobDescription, Long> {
     List<JobDescription> findByResume_Id(long resumeId);
 
     // Fetches all job titles of a resume
-    @Query("SELECT jd.jobTitle FROM JobDescription WHERE jd.resume.id = :resumeId")
+    @Query("SELECT jd.jobTitle FROM JobDescription jd WHERE jd.resume.id = :resumeId")
     List<String> findAllJobTitlesByResume_Id(@Param("resumeId") long resumeId);
 
 }

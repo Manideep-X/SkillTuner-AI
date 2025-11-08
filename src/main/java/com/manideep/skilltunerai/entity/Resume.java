@@ -33,6 +33,9 @@ public class Resume {
     @Column(name = "resume_url", nullable = false)
     private String resumeUrl;
 
+    @Column(name = "cloudinary_public_id", nullable = false)
+    private String cloudinaryPublicId;
+
     @Column(name = "resume_extension", nullable = false)
     private String resumeExtension;
 
@@ -48,9 +51,10 @@ public class Resume {
 
     public Resume() {
     }
-    public Resume(String resumeTitle, String resumeUrl, String resumeExtension, String content) {
+    public Resume(String resumeTitle, String resumeUrl, String cloudinaryPublicId, String resumeExtension, String content) {
         this.resumeTitle = resumeTitle;
         this.resumeUrl = resumeUrl;
+        this.cloudinaryPublicId = cloudinaryPublicId;
         this.resumeExtension = resumeExtension;
         this.content = content;
     }
@@ -71,6 +75,13 @@ public class Resume {
     }
     public void setResumeUrl(String resumeUrl) {
         this.resumeUrl = resumeUrl;
+    }
+    
+    public String getCloudinaryPublicId() {
+        return cloudinaryPublicId;
+    }
+    public void setCloudinaryPublicId(String cloudinaryPublicId) {
+        this.cloudinaryPublicId = cloudinaryPublicId;
     }
     
     public String getResumeExtension() {
