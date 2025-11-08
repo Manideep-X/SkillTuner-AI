@@ -11,13 +11,14 @@ import com.manideep.skilltunerai.entity.Users;
 public class ResumeMapper {
 
     public Resume resumeReqToResumeObj(
-        ResumeRequestDTO resumeRequestDTO, String resumeUrl, String fileExtension, String content, Users users
+        ResumeRequestDTO resumeRequestDTO, String resumeUrl, String cloudinaryPublicId, String fileExtension, String content, Users users
     ) {
 
         Resume resume = new Resume();
 
         resume.setResumeTitle(resumeRequestDTO.getResumeTitle());
         resume.setResumeUrl(resumeUrl);
+        resume.setCloudinaryPublicId(cloudinaryPublicId);
         resume.setResumeExtension(fileExtension);
         resume.setContent(content);
         resume.setUser(users);

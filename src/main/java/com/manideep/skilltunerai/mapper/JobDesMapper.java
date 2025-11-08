@@ -1,10 +1,13 @@
 package com.manideep.skilltunerai.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.manideep.skilltunerai.dto.JobDesRequestDTO;
 import com.manideep.skilltunerai.dto.JobDesResponseDTO;
 import com.manideep.skilltunerai.entity.JobDescription;
 import com.manideep.skilltunerai.entity.Resume;
 
+@Component
 public class JobDesMapper {
 
     public JobDescription jdRequestToJDObj(JobDesRequestDTO jobDesRequestDTO, Resume resume) {
