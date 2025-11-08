@@ -1,6 +1,5 @@
 package com.manideep.skilltunerai.service;
 
-import com.google.genai.errors.ApiException;
 import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
 
 public interface AnalysisResultService {

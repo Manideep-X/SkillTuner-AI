@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
 import com.google.genai.errors.ApiException;
 import com.google.genai.types.GenerateContentResponse;
+import com.google.gson.JsonParseException;
 import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
 import com.manideep.skilltunerai.entity.AnalysisResult;
 import com.manideep.skilltunerai.entity.JobDescription;
@@ -78,9 +79,10 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
             // Removes everything except the JSON file
             int openParenthesis = responseText.indexOf('{');
             int closeParenthesis = responseText.lastIndexOf('}');
-            if (openParenthesis != -1 && closeParenthesis != -1) {
-                responseText = responseText.substring(openParenthesis, closeParenthesis+1);
+            if (openParenthesis == -1 || closeParenthesis == -1 || openParenthesis >= closeParenthesis) {
+                throw new JsonParseException("Didn't get a valid JSON structure from the AI response!");
             }
+            responseText = responseText.substring(openParenthesis, closeParenthesis+1);
 
             // creates an object of jackson object mapper to map JSON to DTO
             ObjectMapper mapper = new ObjectMapper();
