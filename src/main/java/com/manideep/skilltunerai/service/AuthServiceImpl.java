@@ -89,6 +89,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public SigninResponseDTO currentlyLoggedinUserDTO() {
+
+        return authMapper.usersObjToSigninRes(currentlyLoggedinUser(), null);
+
+    }
+
+    @Override
     public Users usersEntityByItsEmail(String email) throws EntityNotFoundException {
         
         return usersRepository.findByEmail(email)

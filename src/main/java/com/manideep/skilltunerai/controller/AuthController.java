@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -24,13 +26,13 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signupUser(@RequestBody SignupRequestDTO signupRequestDTO) {
         authService.signup(signupRequestDTO);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
     
     @PostMapping("/signin")
     public ResponseEntity<SigninResponseDTO> signinUser(@RequestBody SigninRequestDTO signinRequestDTO) {
         SigninResponseDTO signinResponseDTO = authService.signin(signinRequestDTO);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(signinResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(signinResponseDTO);
     }
 
 }
