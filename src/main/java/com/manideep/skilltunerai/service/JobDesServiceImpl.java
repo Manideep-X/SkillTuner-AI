@@ -31,7 +31,7 @@ public class JobDesServiceImpl implements JobDesService {
 
     // Transactional annotation is added as there are two write operations
     @Override
-    public void saveJobDescription(JobDesRequestDTO jobDesRequestDTO) {
+    public JobDesResponseDTO saveJobDescription(JobDesRequestDTO jobDesRequestDTO) {
         
         // Checks if the resume exists for currently logged-in user or not
         Resume resume = resumeService.getResumeByIdForCurrUser(jobDesRequestDTO.getResumeId());
@@ -40,10 +40,12 @@ public class JobDesServiceImpl implements JobDesService {
         JobDescription jobDescription = jobDesMapper.jdRequestToJDObj(jobDesRequestDTO, resume);
 
         // Add the new job description to the resume entity's job description list, and set this resume to the job desciption's entity
-        resume.addJD(jobDescription);
+        JobDescription newJD = resume.addJD(jobDescription);
 
         // Saves the resume to the DB, which cascade saves the job description as well
-        resumeRepository.save(resume);
+        resume = resumeRepository.saveAndFlush(resume);
+
+        return jobDesMapper.jdObjToJdResponse(newJD, resume.getId());
         
     }
 

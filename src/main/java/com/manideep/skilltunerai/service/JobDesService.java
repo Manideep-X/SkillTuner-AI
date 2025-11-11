@@ -12,7 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 public interface JobDesService {
 
     // Save the job description to the DB
-    void saveJobDescription(JobDesRequestDTO jobDesRequestDTO);
+    JobDesResponseDTO saveJobDescription(JobDesRequestDTO jobDesRequestDTO);
 
     // Returns the DTO that can be send to the frontend
     JobDesResponseDTO getJdDTOIfLinkedWithResume(long jdId, long resumeId) throws EntityNotFoundException;
