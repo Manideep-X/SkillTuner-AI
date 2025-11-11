@@ -22,4 +22,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     // Internal query: select * from resume_table where id = ?1 user_id = ?2;
     Optional<Resume> findByIdAndUserId(long id, long userId);
 
+    // Find all resumes with atleast one job description for a user
+    // Internal query: select distinct r.* from resume_table r join job_description j on j.resume_id = r.id where r.user_id = :userId
+    List<Resume> findDistinctByUserIdAndJobDescriptionsIsNotEmpty(long userId);
+
 }

@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.manideep.skilltunerai.dto.ResumeJDListResDTO;
 import com.manideep.skilltunerai.dto.ResumeRequestDTO;
 import com.manideep.skilltunerai.dto.ResumeResponseDTO;
 import com.manideep.skilltunerai.entity.Resume;
@@ -195,6 +196,19 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public ResumeResponseDTO getResumeResponseDTO(long id) {
         return resumeMapper.resumeObjToResumeRes(getResumeByIdForCurrUser(id));
+    }
+
+    @Override
+    public List<ResumeJDListResDTO> getResumesOfCurrUserIfJDNotEmpty() {
+        
+        // Fetches only the resumes which has atleast one job description, for currently logged-in user
+        List<Resume> resumesWithJD = resumeRepository.findDistinctByUserIdAndJobDescriptionsIsNotEmpty(authService.currentlyLoggedinUser().getId());
+
+        // Map the extracted list to the appropiate DTO
+        List<ResumeJDListResDTO> resumeJDListResDTOs = resumeMapper.resumeObjToListRes(resumesWithJD);
+
+        return resumeJDListResDTOs;
+        
     }
 
 }

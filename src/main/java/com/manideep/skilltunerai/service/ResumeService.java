@@ -2,6 +2,7 @@ package com.manideep.skilltunerai.service;
 
 import java.util.List;
 
+import com.manideep.skilltunerai.dto.ResumeJDListResDTO;
 import com.manideep.skilltunerai.dto.ResumeRequestDTO;
 import com.manideep.skilltunerai.dto.ResumeResponseDTO;
 import com.manideep.skilltunerai.entity.Resume;
@@ -27,5 +28,8 @@ public interface ResumeService {
 
     // Method to get a resume response DTO by it's ID
     ResumeResponseDTO getResumeResponseDTO(long id);
+
+    // Method to get a list of resume DTOs of the currently logged-in user with atleast one job description
+    List<ResumeJDListResDTO> getResumesOfCurrUserIfJDNotEmpty();
 
 }
