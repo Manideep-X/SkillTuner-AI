@@ -29,9 +29,9 @@ public class JobDescriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveJobDescriptionForm(@RequestBody JobDesRequestDTO jobDesRequestDTO) {
-        jobDesService.saveJobDescription(jobDesRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    public ResponseEntity<JobDesResponseDTO> saveJobDescriptionForm(@RequestBody JobDesRequestDTO jobDesRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(jobDesService.saveJobDescription(jobDesRequestDTO));
     }
     
 
@@ -41,7 +41,7 @@ public class JobDescriptionController {
     }
     
     @GetMapping
-    public ResponseEntity<List<String>> getMethodName(@PathVariable long resumeId) {
+    public ResponseEntity<List<String>> getJDTitles(@PathVariable long resumeId) {
         return ResponseEntity.ok(jobDesService.getsJobTitlesByResumeId(resumeId));
     }
     

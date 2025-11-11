@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-@RequestMapping("resume/{resumeId}/job-description/{jdId}/analysed-result")
+@RequestMapping("resumes/{resumeId}/job-descriptions/{jdId}/analysed-result")
 public class AnalysisResultController {
 
     private final AnalysisResultService analysisResultService;
@@ -24,7 +24,8 @@ public class AnalysisResultController {
 
     @PostMapping
     public ResponseEntity<AnalysisResultResponseDTO> generateResultResponse(@PathVariable long resumeId, @PathVariable long jdId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(analysisResultService.generateAndSaveResponse(resumeId, jdId));
     }
 
     @GetMapping
