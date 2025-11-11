@@ -3,6 +3,7 @@ package com.manideep.skilltunerai.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.manideep.skilltunerai.dto.ResumeJDListResDTO;
 import com.manideep.skilltunerai.dto.ResumeRequestDTO;
 import com.manideep.skilltunerai.dto.ResumeResponseDTO;
 import com.manideep.skilltunerai.service.ResumeService;
@@ -42,6 +43,11 @@ public class ResumeController {
     @GetMapping
     public ResponseEntity<List<ResumeResponseDTO>> getAllResumesOfCurrUser() {
         return ResponseEntity.ok(resumeService.getResumeDTOsOfCurrUser());
+    }
+
+    @GetMapping("/jd-list")
+    public ResponseEntity<List<ResumeJDListResDTO>> getAllJdListGroupByResume() {
+        return ResponseEntity.ok(resumeService.getResumesOfCurrUserIfJDNotEmpty());
     }
     
     @DeleteMapping("/{resume-id}")

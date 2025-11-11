@@ -1,7 +1,11 @@
 package com.manideep.skilltunerai.mapper;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
+import com.manideep.skilltunerai.dto.ResumeJDListResDTO;
 import com.manideep.skilltunerai.dto.ResumeRequestDTO;
 import com.manideep.skilltunerai.dto.ResumeResponseDTO;
 import com.manideep.skilltunerai.entity.Resume;
@@ -38,6 +42,27 @@ public class ResumeMapper {
         resumeResponseDTO.setResumeUrl(resume.getResumeUrl());
 
         return resumeResponseDTO;
+
+    }
+
+    public List<ResumeJDListResDTO> resumeObjToListRes(List<Resume> resumes) {
+
+        return resumes.stream()
+            // flatMap() flattens the inner list into single continuous stream instead of a list of lists.
+            .flatMap(resume -> resume.getJobDescriptions().stream()
+                .map(jobDescription -> new ResumeJDListResDTO(
+                    resume.getId(),
+                    jobDescription.getId(),
+                    resume.getResumeTitle(),
+                    resume.getResumeExtension(),
+                    jobDescription.getJobTitle(),
+                    jobDescription.getCompanyName(),
+                    // jobDescription.getAnalysisResult() != null ? jobDescription.getAnalysisResult().getCreationTime() : null
+                    Optional.ofNullable(jobDescription.getAnalysisResult())
+                            .map(analysisResult -> analysisResult.getCreationTime())
+                            .orElse(null)
+                )))
+            .toList();
 
     }
 
