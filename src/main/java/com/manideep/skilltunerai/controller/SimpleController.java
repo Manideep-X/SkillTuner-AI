@@ -16,7 +16,7 @@ public class SimpleController {
     @GetMapping
     public ResponseEntity<Map<String, String>> appHealth() {
         return ResponseEntity.ok(Map.of(
-            "message", "This website is now up and running!"
+            "message", "The server is up and running! Requests can be made now."
         ));
     }
 

@@ -3,6 +3,7 @@ package com.manideep.skilltunerai.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.manideep.skilltunerai.dto.SigninResponseDTO;
 import com.manideep.skilltunerai.dto.UpdatePasswordDTO;
 import com.manideep.skilltunerai.dto.UpdateUserRequestDTO;
 import com.manideep.skilltunerai.service.AuthService;
@@ -22,18 +23,17 @@ public class SettingsController {
     }
 
     @PutMapping("/username")
-    public ResponseEntity<?> renameUsername(@RequestBody UpdateUserRequestDTO updateUserRequestDTO) {
+    public ResponseEntity<SigninResponseDTO> renameUsername(@RequestBody UpdateUserRequestDTO updateUserRequestDTO) {
         
-        authService.updateCurrentUser(updateUserRequestDTO);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(authService.updateCurrentUser(updateUserRequestDTO));
         
     }
     
     @PutMapping("/password")
-    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDTO updatePasswordDTO) {
+    public ResponseEntity<Void> updatePassword(@RequestBody UpdatePasswordDTO updatePasswordDTO) {
         
         authService.updatePasswordOfCurrUser(updatePasswordDTO);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
 
     }
     

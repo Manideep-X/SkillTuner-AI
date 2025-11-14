@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserDetailsController {
 
     private final AuthService authService;
