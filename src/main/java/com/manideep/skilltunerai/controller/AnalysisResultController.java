@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
-@RequestMapping("resumes/{resumeId}/job-descriptions/{jdId}/analysed-result")
+@RequestMapping("resumes/{resumeId}/job-descriptions/{jdId}/analysis-result")
 public class AnalysisResultController {
 
     private final AnalysisResultService analysisResultService;
