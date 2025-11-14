@@ -1,7 +1,5 @@
 package com.manideep.skilltunerai.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import com.manideep.skilltunerai.dto.JobDesRequestDTO;
@@ -31,10 +29,10 @@ public class JobDesServiceImpl implements JobDesService {
 
     // Transactional annotation is added as there are two write operations
     @Override
-    public JobDesResponseDTO saveJobDescription(JobDesRequestDTO jobDesRequestDTO) {
+    public JobDesResponseDTO saveJobDescription(JobDesRequestDTO jobDesRequestDTO, long resumeId) {
         
         // Checks if the resume exists for currently logged-in user or not
-        Resume resume = resumeService.getResumeByIdForCurrUser(jobDesRequestDTO.getResumeId());
+        Resume resume = resumeService.getResumeByIdForCurrUser(resumeId);
 
         // Convert the job description DTO to entity before saving it
         JobDescription jobDescription = jobDesMapper.jdRequestToJDObj(jobDesRequestDTO, resume);
@@ -62,13 +60,6 @@ public class JobDesServiceImpl implements JobDesService {
 
         return jobDesMapper.jdObjToJdResponse(jobDescription, jobDescription.getResume().getId());
         
-    }
-
-    @Override
-    public List<String> getsJobTitlesByResumeId(long resumeId) {
-        
-        return jobDesRepository.findAllJobTitlesByResume_Id(resumeId);
-
     }
 
     @Override
