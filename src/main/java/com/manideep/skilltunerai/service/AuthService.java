@@ -31,7 +31,7 @@ public interface AuthService {
     Users usersEntityByItsEmail(String email) throws EntityNotFoundException;
 
     // Method to update the name of currently logged in user
-    void updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO);
+    SigninResponseDTO updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO);
 
     // Method to update the password of currently logged in user
     void updatePasswordOfCurrUser(UpdatePasswordDTO updatePasswordDTO);

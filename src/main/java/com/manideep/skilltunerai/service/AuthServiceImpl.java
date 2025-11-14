@@ -105,13 +105,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO) {
+    public SigninResponseDTO updateCurrentUser(UpdateUserRequestDTO updateUserRequestDTO) {
         
         // Maps the update user DTO to users entity object
-        Users updatedUser = authMapper.updateUserToUsersObj(updateUserRequestDTO, currentlyLoggedinUser());
+        Users currUser = authMapper.updateUserToUsersObj(updateUserRequestDTO, currentlyLoggedinUser());
 
-        // Save the updated user object to the database
-        usersRepository.save(updatedUser);
+        // Save and return the updated user object to the database
+        Users updatedUser = usersRepository.save(currUser);
+        return authMapper.usersObjToSigninRes(updatedUser, null);
         
     }
 
