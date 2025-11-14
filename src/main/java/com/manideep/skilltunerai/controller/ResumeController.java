@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/resume")
+@RequestMapping("/resumes")
 public class ResumeController {
 
     private final ResumeService resumeService;
@@ -29,11 +29,10 @@ public class ResumeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveNewResume(@RequestBody ResumeRequestDTO resumeRequestDTO) {
+    public ResponseEntity<Void> createNewResume(@RequestBody ResumeRequestDTO resumeRequestDTO) {
         resumeService.saveResumeAndUpload(resumeRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-    
 
     @GetMapping("/{resume-id}")
     public ResponseEntity<ResumeResponseDTO> getResumeDetails(@PathVariable("resume-id") long id) {
@@ -45,7 +44,7 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getResumeDTOsOfCurrUser());
     }
 
-    @GetMapping("/jd-list")
+    @GetMapping("/job-descriptions")
     public ResponseEntity<List<ResumeJDListResDTO>> getAllJdListGroupByResume() {
         return ResponseEntity.ok(resumeService.getResumesOfCurrUserIfJDNotEmpty());
     }
@@ -53,7 +52,8 @@ public class ResumeController {
     @DeleteMapping("/{resume-id}")
     public ResponseEntity<Void> deleteResumeById(@PathVariable("resume-id") long id) {
         resumeService.deleteAResume(id);
-        return ResponseEntity.ok(null);
+        // HTTP response code: 204
+        return ResponseEntity.noContent().build();
     }
 
 }

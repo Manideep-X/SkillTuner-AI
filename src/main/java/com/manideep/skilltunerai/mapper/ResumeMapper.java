@@ -57,6 +57,7 @@ public class ResumeMapper {
                     resume.getResumeExtension(),
                     jobDescription.getJobTitle(),
                     jobDescription.getCompanyName(),
+                    jobDescription.getCreationTime(),
                     // jobDescription.getAnalysisResult() != null ? jobDescription.getAnalysisResult().getCreationTime() : null
                     Optional.ofNullable(jobDescription.getAnalysisResult())
                             .map(analysisResult -> analysisResult.getCreationTime())
