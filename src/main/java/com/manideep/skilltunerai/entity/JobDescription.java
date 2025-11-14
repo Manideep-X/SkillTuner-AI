@@ -1,5 +1,9 @@
 package com.manideep.skilltunerai.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +32,10 @@ public class JobDescription {
 
     @Column(nullable = false)
     private String description;
+
+    @Column(name = "creation_time", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime creationTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resume_id")
@@ -68,6 +76,10 @@ public class JobDescription {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public LocalDateTime getCreationTime() {
+        return creationTime;
     }
     
     public Resume getResume() {

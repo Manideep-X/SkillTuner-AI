@@ -11,10 +11,11 @@ public class ResumeJDListResDTO {
     private String jobTitle;
     private String companyName;
     private LocalDateTime creationTime;
+    private LocalDateTime updationTime;
     
     public ResumeJDListResDTO() {
     }
-    public ResumeJDListResDTO(long resumeId, long jdId, String resumeTitle, String resumeExtension, String jobTitle, String companyName, LocalDateTime creationTime) {
+    public ResumeJDListResDTO(long resumeId, long jdId, String resumeTitle, String resumeExtension, String jobTitle, String companyName, LocalDateTime creationTime, LocalDateTime updationTime) {
         this.resumeId = resumeId;
         this.jdId = jdId;
         this.resumeTitle = resumeTitle;
@@ -22,6 +23,7 @@ public class ResumeJDListResDTO {
         this.jobTitle = jobTitle;
         this.companyName = companyName;
         this.creationTime = creationTime;
+        this.updationTime = updationTime;
     }
 
     public long getResumeId() {
@@ -71,6 +73,13 @@ public class ResumeJDListResDTO {
     }
     public void setCreationTime(LocalDateTime creationTime) {
         this.creationTime = creationTime;
+    }
+    
+    public LocalDateTime getUpdationTime() {
+        return updationTime;
+    }
+    public void setUpdationTime(LocalDateTime updationTime) {
+        this.updationTime = updationTime;
     }
 
 }
