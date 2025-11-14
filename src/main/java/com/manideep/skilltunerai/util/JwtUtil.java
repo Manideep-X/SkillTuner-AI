@@ -56,4 +56,8 @@ public class JwtUtil {
                 .compact(); // This generate the final JWT token
     }
 
+    public int getExpirationDurationInMilliSec() {
+        return expiryDuration;
+    }
+
 }

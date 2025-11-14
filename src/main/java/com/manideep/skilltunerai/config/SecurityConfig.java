@@ -42,7 +42,7 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable()) // Same as .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(configurer -> configurer
-                    .requestMatchers("/health", "/info", "/status", "/checkup").permitAll()
+                    .requestMatchers("/health", "/info", "/status", "/checkup", "/auth/**").permitAll()
                     .anyRequest().authenticated())
             // Instead of DaoAuthenticationProvider(deprecated), UserDetailsService can be pluged in security filter clain.
             // Spring will automatically look for PasswordEncoder & autowire it when encountered a UserDeatilsService.
