@@ -1,9 +1,16 @@
 package com.manideep.skilltunerai.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UpdatePasswordDTO {
 
+    @NotBlank(message = "Existing password is typed incorrectly!")
     String existingPassword;
+    
+    @NotBlank(message = "New password can't be empty!")
     String newPassword;
+
+    @NotBlank(message = "It didn't match the new password!")
     String repeatNewPassword;
     
     public UpdatePasswordDTO() {

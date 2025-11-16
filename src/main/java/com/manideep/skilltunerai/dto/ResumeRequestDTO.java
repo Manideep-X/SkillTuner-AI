@@ -2,9 +2,15 @@ package com.manideep.skilltunerai.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class ResumeRequestDTO {
 
+    @NotBlank(message = "Resume title is required!")
     private String resumeTitle;
+
+    @NotNull(message = "Resume file is required!")
     private MultipartFile resumeFile;
     
     public ResumeRequestDTO() {
