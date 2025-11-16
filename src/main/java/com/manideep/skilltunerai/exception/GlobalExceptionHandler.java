@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({IOException.class, FileUploadException.class})
-    public ResponseEntity<Map<String, String>> handleIOException(IOException exception) {
+    public ResponseEntity<Map<String, String>> handleIOException(Exception exception) {
 
         logger.error("Unable to read or upload the file: ", exception);
         // HTTP status code: 400
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler({PersistenceException.class, JacksonParsingException.class, CloudFileNotFoundException.class, Exception.class})
+    @ExceptionHandler({PersistenceException.class, JacksonParsingException.class, CloudFileNotFoundException.class})
     public ResponseEntity<Map<String, String>> handleErrorWhileSavingInDB(Exception exception) {
 
         // HTTP status code: 500
@@ -128,6 +128,15 @@ public class GlobalExceptionHandler {
                 "message", exception.getMessage()
             ));
         }
+
+        logger.error("Unknown error: ", exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+            "message", "An unknown error occured! Please try again later"
+        ));
+
+    }
+
+    public ResponseEntity<Map<String, String>> handleOtherExceptions(Exception exception) {
 
         logger.error("Unexpected error: ", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
