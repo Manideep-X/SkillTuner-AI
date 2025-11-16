@@ -6,6 +6,8 @@ import com.manideep.skilltunerai.dto.JobDesRequestDTO;
 import com.manideep.skilltunerai.dto.JobDesResponseDTO;
 import com.manideep.skilltunerai.service.JobDesService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +28,7 @@ public class JobDescriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<JobDesResponseDTO> createJobDescription(@RequestBody JobDesRequestDTO jobDesRequestDTO, @PathVariable long resumeId) {
+    public ResponseEntity<JobDesResponseDTO> createJobDescription(@Valid @RequestBody JobDesRequestDTO jobDesRequestDTO, @PathVariable long resumeId) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(jobDesService.saveJobDescription(jobDesRequestDTO, resumeId));
     }
