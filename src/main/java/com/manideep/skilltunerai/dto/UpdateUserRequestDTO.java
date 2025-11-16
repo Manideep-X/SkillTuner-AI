@@ -1,8 +1,13 @@
 package com.manideep.skilltunerai.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class UpdateUserRequestDTO {
 
+    @NotBlank(message = "First name can't be empty!")
     String firstName;
+    
+    @NotBlank(message = "Last name can't be empty!")
     String lastName;
     
     public UpdateUserRequestDTO() {

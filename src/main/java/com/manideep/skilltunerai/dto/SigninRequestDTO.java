@@ -1,8 +1,13 @@
 package com.manideep.skilltunerai.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class SigninRequestDTO {
 
+    @NotBlank(message = "Email address is required!")
     private String email;
+    
+    @NotBlank(message = "Password is required!")
     private String password;
     
     public SigninRequestDTO() {

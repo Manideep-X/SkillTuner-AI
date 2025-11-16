@@ -1,9 +1,16 @@
 package com.manideep.skilltunerai.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class JobDesRequestDTO {
 
+    @NotBlank(message = "Job description title is required!")
     private String jobTitle;
+
+    @NotBlank(message = "Company name is required!")
     private String companyName;
+    
+    @NotBlank(message = "The job description is required!")
     private String description;
     
     public JobDesRequestDTO() {
