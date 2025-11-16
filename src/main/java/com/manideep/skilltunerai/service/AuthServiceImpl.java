@@ -1,5 +1,7 @@
 package com.manideep.skilltunerai.service;
 
+import java.util.Map;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public SigninResponseDTO signin(SigninRequestDTO signinRequestDTO) throws BadCredentialsException {
+    public Map<String, Object> signin(SigninRequestDTO signinRequestDTO) throws BadCredentialsException {
         
         try {
             // Authenticate the user by passing an unauthenticated token UsernamePasswordAuthenticationToken, which contains all credentials.
@@ -74,7 +76,10 @@ public class AuthServiceImpl implements AuthService {
         Users users = usersRepository.findByEmail(signinRequestDTO.getEmail())
             .orElseThrow(() -> new BadCredentialsException("Invalid email and/or password! Try again"));
         // Returns the signin response which contains the JWT token
-        return authMapper.usersObjToSigninRes(users, jwtToken);
+        return Map.of(
+            "user", authMapper.usersObjToSigninRes(users),
+            "jwtToken", jwtToken
+        );
         
     }
 
@@ -91,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public SigninResponseDTO currentlyLoggedinUserDTO() {
 
-        return authMapper.usersObjToSigninRes(currentlyLoggedinUser(), null);
+        return authMapper.usersObjToSigninRes(currentlyLoggedinUser());
 
     }
 
@@ -112,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
 
         // Save and return the updated user object to the database
         Users updatedUser = usersRepository.save(currUser);
-        return authMapper.usersObjToSigninRes(updatedUser, null);
+        return authMapper.usersObjToSigninRes(updatedUser);
         
     }
 
