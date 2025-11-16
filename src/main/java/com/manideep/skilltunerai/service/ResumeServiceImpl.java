@@ -103,7 +103,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         try {
             return cloudinary.uploader().upload(
-                resume.getInputStream(), 
+                resume.getBytes(), 
                 ObjectUtils.asMap(
                     "folder", "resume/", // puts every resume in the resume folder
                     "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename(), // sets unique id for each file in cloudinary
@@ -112,6 +112,7 @@ public class ResumeServiceImpl implements ResumeService {
             );
             
         } catch (Exception e) {
+            e.printStackTrace();
             throw new FileUploadException("Error occured while uploading or reading file!");
         }
 
