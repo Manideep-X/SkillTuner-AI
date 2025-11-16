@@ -24,10 +24,10 @@ public class JobDescription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "job_title")
+    @Column(name = "job_title", nullable = false)
     private String jobTitle;
 
-    @Column(name = "company_name")
+    @Column(name = "company_name", nullable = false)
     private String companyName;
 
     @Column(nullable = false)
