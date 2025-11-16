@@ -10,6 +10,9 @@ import com.manideep.skilltunerai.util.JwtUtil;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,19 +33,19 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signupUser(@RequestBody SignupRequestDTO signupRequestDTO) {
+    public ResponseEntity<Void> signupUser(@Valid @RequestBody SignupRequestDTO signupRequestDTO) {
         authService.signup(signupRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
     
     @PostMapping("/signin")
-    public ResponseEntity<SigninResponseDTO> signinUser(@RequestBody SigninRequestDTO signinRequestDTO, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<SigninResponseDTO> signinUser(@Valid @RequestBody SigninRequestDTO signinRequestDTO, HttpServletResponse httpServletResponse) {
 
-        // Signing user in
-        SigninResponseDTO signinResponseDTO = authService.signin(signinRequestDTO);
+        // Signing in the user and generating the token
+        Map<String, Object> signinResponseDTO = authService.signin(signinRequestDTO);
 
         // Adding the token as a secure cookie to the response
-        Cookie jwtCookie = new Cookie("jwt", signinResponseDTO.getJwtToken());
+        Cookie jwtCookie = new Cookie("jwt", (String) signinResponseDTO.get("jwtToken"));
         jwtCookie.setHttpOnly(true); // setting true means JS in browser can't access the token
         jwtCookie.setSecure(true); // setting true means cookie can only be sent over HTTPS not HTTP
         jwtCookie.setMaxAge(jwtUtil.getExpirationDurationInMilliSec()/1000);
@@ -50,7 +53,7 @@ public class AuthController {
         // Adding the cookie in the reponse
         httpServletResponse.addCookie(jwtCookie);
 
-        return ResponseEntity.status(HttpStatus.OK).body(signinResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body((SigninResponseDTO) signinResponseDTO.get("user"));
     }
 
 }
