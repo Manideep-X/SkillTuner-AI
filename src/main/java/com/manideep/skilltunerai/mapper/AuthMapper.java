@@ -30,7 +30,7 @@ public class AuthMapper {
 
     }
 
-    public SigninResponseDTO usersObjToSigninRes(Users users, String jwtToken) {
+    public SigninResponseDTO usersObjToSigninRes(Users users) {
 
         SigninResponseDTO signinResponseDTO = new SigninResponseDTO();
 
@@ -40,7 +40,6 @@ public class AuthMapper {
         signinResponseDTO.setEmail(users.getEmail());
         signinResponseDTO.setCreationTime(users.getCreationTime());
         signinResponseDTO.setUpdationTime(users.getUpdationTime());
-        signinResponseDTO.setJwtToken(jwtToken);
 
         return signinResponseDTO;
 
