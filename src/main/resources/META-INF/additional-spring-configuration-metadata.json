@@ -23,5 +23,10 @@
     "name": "app.scheduling.timezone",
     "type": "java.lang.String",
     "description": "A description for 'app.scheduling.timezone'"
+  },
+  {
+    "name": "cloudinary.url",
+    "type": "java.lang.String",
+    "description": "A description for 'cloudinary.url'"
   }
 ]}
