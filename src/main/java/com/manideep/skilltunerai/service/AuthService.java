@@ -1,5 +1,8 @@
 package com.manideep.skilltunerai.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.security.authentication.BadCredentialsException;
 
 import com.manideep.skilltunerai.dto.SigninRequestDTO;
@@ -19,7 +22,7 @@ public interface AuthService {
     void signup(SignupRequestDTO signupRequestDTO) throws DuplicateValueException, PersistenceException;
     
     // Method for signing in exsisting user
-    SigninResponseDTO signin(SigninRequestDTO signinRequestDTO) throws BadCredentialsException;
+    Map<String, Object> signin(SigninRequestDTO signinRequestDTO) throws BadCredentialsException;
 
     // Method for getting the user entity who is currently signed-in
     Users currentlyLoggedinUser();
