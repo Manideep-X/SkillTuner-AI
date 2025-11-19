@@ -39,7 +39,7 @@ public class Resume {
     @Column(name = "resume_extension", nullable = false)
     private String resumeExtension;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -25,6 +25,7 @@ import com.manideep.skilltunerai.repository.UsersRepository;
 import com.manideep.skilltunerai.util.PdfDocParserUtil;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 
 @Service
 public class ResumeServiceImpl implements ResumeService {
@@ -85,6 +86,7 @@ public class ResumeServiceImpl implements ResumeService {
             uploadDetails.get("secure_url").toString(),
             uploadDetails.get("public_id").toString(),
             fileExtention,
+            resumeRequestDTO.getResumeFile().getSize(),
             resumeContent,
             currUser
         );
@@ -92,8 +94,24 @@ public class ResumeServiceImpl implements ResumeService {
         // helper method to link the newly created resume with the user and vise versa
         currUser.addResume(newResume);
 
-        // Saves the current user entity object to the DB, it will automatically save the resume because of cascadeType.ALL
-        usersRepository.save(currUser);
+        // Trys to save the current user entity object to the DB, it will automatically save the resume because of cascadeType.ALL
+        try {
+            usersRepository.save(currUser);
+        } catch (Exception e) {
+
+            // remove link between resume and current user from the memory
+            currUser.removeResume(newResume);
+
+            // Trys to delete resume from cloudinary
+            try {
+                logger.info("Deleting file from Cloudinary: {}", newResume.getCloudinaryPublicId());
+                cloudinary.uploader().destroy(newResume.getCloudinaryPublicId(), ObjectUtils.emptyMap());
+            } catch (Exception cloudExp) {
+                logger.error("Failed to delete file from Cloudinary: {} {}", newResume.getCloudinaryPublicId(), cloudExp);
+            }
+
+            throw new PersistenceException("Error occured while persisting resume to database!");
+        }
 
     }
 
@@ -103,7 +121,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         try {
             return cloudinary.uploader().upload(
-                resume.getInputStream(), 
+                resume.getBytes(), 
                 ObjectUtils.asMap(
                     "folder", "resume/", // puts every resume in the resume folder
                     "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename(), // sets unique id for each file in cloudinary
@@ -112,6 +130,7 @@ public class ResumeServiceImpl implements ResumeService {
             );
             
         } catch (Exception e) {
+            e.printStackTrace();
             throw new FileUploadException("Error occured while uploading or reading file!");
         }
 
