@@ -29,8 +29,9 @@ public class JobDesMapper {
         JobDesResponseDTO jobDesResponseDTO = new JobDesResponseDTO();
 
         jobDesResponseDTO.setId(jobDescription.getId());
+        jobDesResponseDTO.setJobTitle(jobDescription.getJobTitle());
         jobDesResponseDTO.setCompanyName(jobDescription.getCompanyName());
-        jobDesResponseDTO.setDescription(jobDesResponseDTO.getDescription());
+        jobDesResponseDTO.setDescription(jobDescription.getDescription());
         jobDesResponseDTO.setResumeId(resumeId);
 
         return jobDesResponseDTO;

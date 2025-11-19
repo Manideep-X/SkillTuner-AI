@@ -39,6 +39,9 @@ public class Resume {
     @Column(name = "resume_extension", nullable = false)
     private String resumeExtension;
 
+    @Column(name = "file_size_in_bytes", nullable = false)
+    private long fileSizeInBytes;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -51,11 +54,12 @@ public class Resume {
 
     public Resume() {
     }
-    public Resume(String resumeTitle, String resumeUrl, String cloudinaryPublicId, String resumeExtension, String content) {
+    public Resume(String resumeTitle, String resumeUrl, String cloudinaryPublicId, String resumeExtension, long fileSizeInBytes, String content) {
         this.resumeTitle = resumeTitle;
         this.resumeUrl = resumeUrl;
         this.cloudinaryPublicId = cloudinaryPublicId;
         this.resumeExtension = resumeExtension;
+        this.fileSizeInBytes = fileSizeInBytes;
         this.content = content;
     }
 
@@ -91,6 +95,13 @@ public class Resume {
         this.resumeExtension = resumeExtension;
     }
     
+    public long getFileSizeInBytes() {
+        return fileSizeInBytes;
+    }
+    public void setFileSizeInBytes(long fileSizeInBytes) {
+        this.fileSizeInBytes = fileSizeInBytes;
+    }
+    
     public String getContent() {
         return content;
     }
@@ -113,10 +124,9 @@ public class Resume {
     }
 
     // Helper methods
-    public JobDescription addJD(JobDescription job) {
+    public void addJD(JobDescription job) {
         jobDescriptions.add(job);
         job.setResume(this);
-        return job;
     }
     public void removeJD(JobDescription job) {
         jobDescriptions.remove(job);
