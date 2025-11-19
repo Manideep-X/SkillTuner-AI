@@ -29,8 +29,7 @@ public class JobDescriptionController {
 
     @PostMapping
     public ResponseEntity<JobDesResponseDTO> createJobDescription(@Valid @RequestBody JobDesRequestDTO jobDesRequestDTO, @PathVariable long resumeId) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(jobDesService.saveJobDescription(jobDesRequestDTO, resumeId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(jobDesService.saveJobDescription(jobDesRequestDTO, resumeId));
     }
 
     @GetMapping("/{id}")
