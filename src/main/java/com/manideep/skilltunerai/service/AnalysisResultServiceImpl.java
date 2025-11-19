@@ -1,6 +1,7 @@
 package com.manideep.skilltunerai.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
@@ -11,14 +12,17 @@ import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
 import com.manideep.skilltunerai.entity.AnalysisResult;
 import com.manideep.skilltunerai.entity.JobDescription;
 import com.manideep.skilltunerai.entity.Resume;
+import com.manideep.skilltunerai.exception.DuplicateValueException;
 import com.manideep.skilltunerai.exception.JacksonParsingException;
 import com.manideep.skilltunerai.mapper.AnalysisMapper;
+import com.manideep.skilltunerai.repository.AnalysisResultRepository;
 import com.manideep.skilltunerai.repository.JobDesRepository;
 import com.manideep.skilltunerai.util.GeminiPromptCreationUtil;
 
 @Service
 public class AnalysisResultServiceImpl implements AnalysisResultService {
 
+    private final AnalysisResultRepository resultRepository;
     private final JobDesRepository jobDesRepository;
     private final JobDesService jobDesService;
     private final ResumeService resumeService;
@@ -26,7 +30,8 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
     private final Client geminiClient;
     private final GeminiModelManagerService geminiModelManagerService;
 
-    public AnalysisResultServiceImpl(JobDesService jobDesService, ResumeService resumeService, Client geminiClient, AnalysisMapper analysisMapper, JobDesRepository jobDesRepository, GeminiModelManagerService geminiModelManagerService) {
+    public AnalysisResultServiceImpl(JobDesService jobDesService, ResumeService resumeService, Client geminiClient, AnalysisMapper analysisMapper, JobDesRepository jobDesRepository, GeminiModelManagerService geminiModelManagerService, AnalysisResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
         this.jobDesRepository = jobDesRepository;
         this.jobDesService = jobDesService;
         this.resumeService = resumeService;
@@ -35,6 +40,7 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
         this.geminiModelManagerService = geminiModelManagerService;
     }
 
+    @Transactional
     @Override
     public AnalysisResultResponseDTO generateAndSaveResponse(long resumeId, long jdId) {
         
@@ -43,6 +49,11 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
 
         // Need to check if the job description belongs to that resume
         JobDescription jobDescription = jobDesService.getJDIfLinkedWithResume(jdId, resume);
+
+        // Need to check if the analysis result already exists or not
+        if (jobDescription.getAnalysisResult() != null) {
+            throw new DuplicateValueException("Analysis result for this job description already exists!");
+        }
 
         // Gets prompt for generating results
         String prompt = GeminiPromptCreationUtil.createPrompt(
@@ -59,13 +70,16 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
 
         // Map to analysed result from response DTO to entity
         AnalysisResult analysisResult = analysisMapper.analysisResponseToAnalysisObj(responseDTO);
+
+        // Saves the analysis result into the database
+        analysisResult = resultRepository.save(analysisResult);
         
-        // This adds the analysed result to the job description and save it to the database, which cascade saves the analysis result to the database
+        // This adds the analysed result to the job description and save it to the database
         jobDescription.setAnalysisResult(analysisResult);
         jobDesRepository.save(jobDescription);
 
         // return the saved value
-        return responseDTO;
+        return analysisMapper.analysisObjToAnalysisResponse(analysisResult);
         
     }
 
@@ -90,6 +104,7 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
             return responseDTO;
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new JacksonParsingException("Can't parse or map the JSON object!");
         }
         

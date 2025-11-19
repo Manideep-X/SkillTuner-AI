@@ -4,11 +4,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
-
-import com.manideep.skilltunerai.mapper.ListToJsonConverter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,18 +25,26 @@ public class AnalysisResult {
     @Column(name = "match_score")
     private int matchScore;
 
+    @Column(columnDefinition = "TEXT")
     private String feedback;
 
+    // Allows Hibernate to send/receive JSON between Java and PostgreSQL.
+    @JdbcTypeCode(SqlTypes.JSON)
+    // Tells Hibernate to generate the column in the DB as jsonb.
     @Column(columnDefinition = "jsonb")
-    @Convert(converter = ListToJsonConverter.class)
+    // Converts a Java object into a JSON String before saving.
+    // Converts JSON String from DB back into a Java object when loading.
+    // @Convert(converter = ListToJsonConverter.class)
     private List<String> strengths;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    @Convert(converter = ListToJsonConverter.class)
+    // @Convert(converter = ListToJsonConverter.class)
     private List<String> improvements;
     
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "missing_skills", columnDefinition = "jsonb")
-    @Convert(converter = ListToJsonConverter.class)
+    // @Convert(converter = ListToJsonConverter.class)
     private List<String> missingSkills;
 
     @Column(name = "creation_time", updatable = false)
