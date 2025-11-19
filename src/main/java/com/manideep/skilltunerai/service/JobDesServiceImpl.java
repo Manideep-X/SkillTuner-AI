@@ -1,6 +1,7 @@
 package com.manideep.skilltunerai.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.manideep.skilltunerai.dto.JobDesRequestDTO;
 import com.manideep.skilltunerai.dto.JobDesResponseDTO;
@@ -28,6 +29,7 @@ public class JobDesServiceImpl implements JobDesService {
     }
 
     // Transactional annotation is added as there are two write operations
+    @Transactional
     @Override
     public JobDesResponseDTO saveJobDescription(JobDesRequestDTO jobDesRequestDTO, long resumeId) {
         
@@ -37,13 +39,16 @@ public class JobDesServiceImpl implements JobDesService {
         // Convert the job description DTO to entity before saving it
         JobDescription jobDescription = jobDesMapper.jdRequestToJDObj(jobDesRequestDTO, resume);
 
+        // Saves the job description
+        JobDescription savedJD = jobDesRepository.save(jobDescription);
+
         // Add the new job description to the resume entity's job description list, and set this resume to the job desciption's entity
-        JobDescription newJD = resume.addJD(jobDescription);
+        resume.addJD(savedJD);
 
-        // Saves the resume to the DB, which cascade saves the job description as well
-        resume = resumeRepository.saveAndFlush(resume);
-
-        return jobDesMapper.jdObjToJdResponse(newJD, resume.getId());
+        // Even though the resume saved to the DB will cascade saves the job description as well
+        // But JD needed to be returned
+        resume = resumeRepository.save(resume);
+        return jobDesMapper.jdObjToJdResponse(savedJD, resume.getId());
         
     }
 
