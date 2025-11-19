@@ -1,6 +1,5 @@
 package com.manideep.skilltunerai.service;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.authentication.BadCredentialsException;
