@@ -101,7 +101,18 @@ public class GlobalExceptionHandler {
             logger.error("All Gemini models are exhausted: ", exception);
         
         return ResponseEntity.status(resStatus).body(Map.of(
-            "message", exception.message()
+            "message", exception.getMessage()
+        ));
+
+    }
+
+    @ExceptionHandler(JwtExpiredException.class)
+    public ResponseEntity<Map<String, String>> handleJwtTokenExpiration(Exception exception) {
+
+        logger.info("JWT token is expired: ", exception);
+        // HTTP status code: 401
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+            "message", exception.getMessage()
         ));
 
     }

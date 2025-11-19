@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+// Converts a Java object into a JSON String before saving.
+// Converts JSON String from DB back into a Java object when loading.
 @Converter
 public class ListToJsonConverter implements AttributeConverter<List<String>, String> {
 
