@@ -6,16 +6,18 @@ public class ResumeResponseDTO {
     private String resumeTitle;
     private String resumeUrl;
     private String resumeExtension;
+    private long fileSizeInBytes;
     
     public ResumeResponseDTO() {
     }
-    public ResumeResponseDTO(long id, String resumeTitle, String resumeUrl, String resumeExtension) {
+    public ResumeResponseDTO(long id, String resumeTitle, String resumeUrl, String resumeExtension, long fileSizeInBytes) {
         this.id = id;
         this.resumeTitle = resumeTitle;
         this.resumeUrl = resumeUrl;
         this.resumeExtension = resumeExtension;
+        this.fileSizeInBytes = fileSizeInBytes;
     }
-    
+
     public long getId() {
         return id;
     }
@@ -37,6 +39,13 @@ public class ResumeResponseDTO {
         this.resumeUrl = resumeUrl;
     }
 
+    public long getFileSizeInBytes() {
+        return fileSizeInBytes;
+    }
+    public void setFileSizeInBytes(long fileSizeInBytes) {
+        this.fileSizeInBytes = fileSizeInBytes;
+    }
+    
     public String getResumeExtension() {
         return resumeExtension;
     }

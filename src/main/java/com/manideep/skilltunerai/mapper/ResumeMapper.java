@@ -15,7 +15,7 @@ import com.manideep.skilltunerai.entity.Users;
 public class ResumeMapper {
 
     public Resume resumeReqToResumeObj(
-        ResumeRequestDTO resumeRequestDTO, String resumeUrl, String cloudinaryPublicId, String fileExtension, String content, Users users
+        ResumeRequestDTO resumeRequestDTO, String resumeUrl, String cloudinaryPublicId, String fileExtension, long fileSizeInBytes, String content, Users users
     ) {
 
         Resume resume = new Resume();
@@ -24,6 +24,7 @@ public class ResumeMapper {
         resume.setResumeUrl(resumeUrl);
         resume.setCloudinaryPublicId(cloudinaryPublicId);
         resume.setResumeExtension(fileExtension);
+        resume.setFileSizeInBytes(fileSizeInBytes);
         resume.setContent(content);
         resume.setUser(users);
         resume.setJobDescriptions(null);
@@ -39,6 +40,7 @@ public class ResumeMapper {
         resumeResponseDTO.setId(resume.getId());
         resumeResponseDTO.setResumeTitle(resume.getResumeTitle());
         resumeResponseDTO.setResumeExtension(resume.getResumeExtension());
+        resumeResponseDTO.setFileSizeInBytes(resume.getFileSizeInBytes());
         resumeResponseDTO.setResumeUrl(resume.getResumeUrl());
 
         return resumeResponseDTO;
