@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,9 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
+
+    @Value("${app.base-url}")
+    private String appUrl;
     
     public AuthController(AuthService authService, JwtUtil jwtUtil) {
         this.authService = authService;
@@ -48,6 +52,9 @@ public class AuthController {
         Cookie jwtCookie = new Cookie("jwt", (String) signinResponseDTO.get("jwtToken"));
         jwtCookie.setHttpOnly(true); // setting true means JS in browser can't access the token
         jwtCookie.setSecure(true); // setting true means cookie can only be sent over HTTPS not HTTP
+        jwtCookie.setAttribute("SameSite", "None"); // Tells browser to attach the cookie in corss-site requests
+        jwtCookie.setPath("/"); // the path where the JWT cookie will be stored
+        jwtCookie.setDomain(appUrl);
         jwtCookie.setMaxAge(jwtUtil.getExpirationDurationInMilliSec()/1000);
 
         // Adding the cookie in the reponse
