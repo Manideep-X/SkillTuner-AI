@@ -72,7 +72,7 @@ public class SecurityConfig {
         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         // Allowed HTTP headers
-        cors.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        cors.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Cookie"));
 
         // Allows authentication token in the CORS
         cors.setAllowCredentials(true);
