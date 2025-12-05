@@ -45,21 +45,19 @@ jobs:
       #   ${VAR,,} → lowercase
       #   ${VAR~} → capitalize first letter
       #   ${VAR,} → lowercase first letter
-      
-    - name: Build the Docker image # Both the initial beta version and the latest version are added
-      run: |
-        docker build . \
-          -t ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:latest \
-          -t ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:0.1 \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:latest \
-          -t ${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:0.1
 
-    - name: Push image to GHCR
-      run: |
-        docker push ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:latest
-        docker push ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:0.1
-          
-    - name: Push image to Docker Hub
-      run: |
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:latest
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:0.1
+    - name: Set up Docker Buildx for caching
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and Push the Docker image with cache
+      uses: docker/build-push-action@v5
+      with:
+        context: . # all files in this current directory will be send to Docker for building image
+        push: true # will automatically push the image to the registries after building it
+        tags: |
+          ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:latest
+          ghcr.io/${{ steps.vars.outputs.owner_lowerc }}/skilltuner-ai:0.1
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:latest
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/skilltuner-ai:0.1
+        cache-from: type=gha # load cached layers from GitHub Action Storage(if available)
+        cache-to: type=gha,mode=max # save/update caches layer to GitHub Action Storage
