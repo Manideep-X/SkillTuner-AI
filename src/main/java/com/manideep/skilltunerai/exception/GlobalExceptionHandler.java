@@ -94,10 +94,10 @@ public class GlobalExceptionHandler {
         HttpStatus resStatus = HttpStatus.TOO_MANY_REQUESTS;
         if (exception.code() == 403) {
             logger.error("Gemini model access permission issue: ", exception);
-            resStatus = HttpStatus.FORBIDDEN;
+            // HTTP status code: 500
+            resStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         else 
-            // HTTP status code: 403
             logger.error("All Gemini models are exhausted: ", exception);
         
         return ResponseEntity.status(resStatus).body(Map.of(

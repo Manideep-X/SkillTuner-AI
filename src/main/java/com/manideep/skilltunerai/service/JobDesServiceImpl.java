@@ -75,7 +75,7 @@ public class JobDesServiceImpl implements JobDesService {
         // Need to check if the job description exists for the given resume
         Resume resume = resumeService.getResumeByIdForCurrUser(resumeId);
         if (jobDescription.getResume().getId() != resume.getId()) {
-            throw new SecurityException("Can't delete the analysis history that doesn't exists!");
+            throw new EntityNotFoundException("Can't delete the analysis history that doesn't exists!");
         }
 
         // Delete remove the JD from the JD list of the resume and set JD's resume to null

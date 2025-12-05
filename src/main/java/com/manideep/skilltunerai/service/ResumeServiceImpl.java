@@ -162,14 +162,14 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public void deleteAResume(long id) throws SecurityException {
+    public void deleteAResume(long id) throws EntityNotFoundException {
         
         Users currUser = authService.currentlyLoggedinUser();
         Resume resume = null;
         try {
             resume = getResumeByIdForCurrUser(id);
         } catch (Exception e) {
-            throw new SecurityException("Can't delete resume that doesn't exists!");
+            throw new EntityNotFoundException("Can't delete resume that doesn't exists!");
         }
 
         // Trys to delete resume from cloudinary

@@ -15,7 +15,7 @@ public interface ResumeService {
     void saveResumeAndUpload(ResumeRequestDTO resumeRequestDTO);
 
     // Method to delete a resume by it's ID
-    void deleteAResume(long id) throws SecurityException;
+    void deleteAResume(long id) throws EntityNotFoundException;
 
     // Method to get a resume by it's ID
     Resume getResumeByIdForCurrUser(long id) throws EntityNotFoundException;
