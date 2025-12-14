@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserDetailsController {
 
     private final AuthService authService;
@@ -26,6 +26,12 @@ public class UserDetailsController {
     public UserDetailsController(AuthService authService) {
         this.authService = authService;
     }
+
+    @GetMapping("/checkpoint")
+    public ResponseEntity<Void> checkingPoint() {
+        return ResponseEntity.ok().build();
+    }
+    
 
     @GetMapping("/details")
     public ResponseEntity<SigninResponseDTO> getUserDetails() {
