@@ -14,6 +14,7 @@ import com.manideep.skilltunerai.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -31,16 +32,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         
-        final String authHeader = request.getHeader("Authorization");
-
         String username = null;
         String jwtToken = null;
+        
+        final Cookie[] cookies = request.getCookies();
 
-        // If the header is not empty and the Athorization field starts with "Bearer ", then extract the token and get the username.
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        // If the header is not empty and the list of cookies have JWT cookie, then get the token and the username.
+        if (cookies != null) {
             // The word Bearer automatically gets added in front of the token in the request header. Which means, the one who have the token can only access the contents.
-            jwtToken = authHeader.substring(7);
-            username = jwtUtil.getUsername(jwtToken);
+            for (Cookie cookie : cookies) {
+                if ("jwt".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+            if (jwtToken != null) {
+                username = jwtUtil.getUsername(jwtToken);
+            }
         }
 
         // need to check if the user is already authenticated to avoid auth override during authentication.
