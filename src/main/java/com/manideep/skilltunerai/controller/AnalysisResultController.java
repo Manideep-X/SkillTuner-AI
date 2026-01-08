@@ -30,7 +30,9 @@ public class AnalysisResultController {
 
     @GetMapping
     public ResponseEntity<AnalysisResultResponseDTO> getResultResponse(@PathVariable long resumeId, @PathVariable long jdId) {
-        return ResponseEntity.ok(analysisResultService.getAnalysedDTOByJDAndResume(resumeId, jdId));
+        return analysisResultService.getAnalysedDTOByJDAndResume(resumeId, jdId)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.noContent().build());
     }
 
 }

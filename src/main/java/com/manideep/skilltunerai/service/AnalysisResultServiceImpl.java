@@ -1,5 +1,7 @@
 package com.manideep.skilltunerai.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +113,7 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
     }
 
     @Override
-    public AnalysisResultResponseDTO getAnalysedDTOByJDAndResume(long resumeId, long jdId) {
+    public Optional<AnalysisResultResponseDTO> getAnalysedDTOByJDAndResume(long resumeId, long jdId) {
         
         // Need to check if the resumes belong to the currently logged-in user
         Resume resume = resumeService.getResumeByIdForCurrUser(resumeId);
@@ -119,8 +121,8 @@ public class AnalysisResultServiceImpl implements AnalysisResultService {
         // Need to check if the job description belongs to that resume
         JobDescription jobDescription = jobDesService.getJDIfLinkedWithResume(jdId, resume);
 
-        // Returns the mapped response DTO of the Analysed result entity object
-        return analysisMapper.analysisObjToAnalysisResponse(jobDescription.getAnalysisResult());
+        // Returns the mapped response DTO of the Analysed result entity object, and returns null if empty
+        return Optional.ofNullable(jobDescription.getAnalysisResult()).map(analysisMapper::analysisObjToAnalysisResponse);
         
     }
 
