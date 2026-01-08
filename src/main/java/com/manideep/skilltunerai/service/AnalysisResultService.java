@@ -1,5 +1,7 @@
 package com.manideep.skilltunerai.service;
 
+import java.util.Optional;
+
 import com.manideep.skilltunerai.dto.AnalysisResultResponseDTO;
 
 public interface AnalysisResultService {
@@ -11,6 +13,6 @@ public interface AnalysisResultService {
     AnalysisResultResponseDTO parseTheResponse(String responseText);
 
     // Returns response DTO for the analysed result
-    AnalysisResultResponseDTO getAnalysedDTOByJDAndResume(long resumeId, long jdId);
+    Optional<AnalysisResultResponseDTO> getAnalysedDTOByJDAndResume(long resumeId, long jdId);
 
 }
