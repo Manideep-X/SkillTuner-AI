@@ -35,7 +35,7 @@ public class ResumeServiceImpl implements ResumeService {
     private final ResumeRepository resumeRepository;
     private final ResumeMapper resumeMapper;
     private final Cloudinary cloudinary;
-
+    
     public ResumeServiceImpl(AuthService authService, ResumeRepository resumeRepository, Cloudinary cloudinary, ResumeMapper resumeMapper, UsersRepository usersRepository) {
         this.authService = authService;
         this.usersRepository = usersRepository;
@@ -80,11 +80,16 @@ public class ResumeServiceImpl implements ResumeService {
         // Uploading the resume to Cloudinary and obtaining details
         Map<String, Object> uploadDetails = uploadResume(resumeRequestDTO.getResumeFile());
 
+        // Gets the proper resume URL
+        String publicId = uploadDetails.get("public_id").toString();
+        String version = uploadDetails.get("version").toString();
+        String resumeUrl = getResumeUrlFromUpload(publicId, version);
+
         // Map the resume request DTO to the resume entity
         Resume newResume = resumeMapper.resumeReqToResumeObj(
             resumeRequestDTO, 
-            uploadDetails.get("secure_url").toString(),
-            uploadDetails.get("public_id").toString(),
+            resumeUrl,
+            publicId,
             fileExtention,
             resumeRequestDTO.getResumeFile().getSize(),
             resumeContent,
@@ -105,7 +110,7 @@ public class ResumeServiceImpl implements ResumeService {
             // Trys to delete resume from cloudinary
             try {
                 logger.info("Deleting file from Cloudinary: {}", newResume.getCloudinaryPublicId());
-                cloudinary.uploader().destroy(newResume.getCloudinaryPublicId(), ObjectUtils.emptyMap());
+                cloudinary.uploader().destroy(newResume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", "raw"));
             } catch (Exception cloudExp) {
                 logger.error("Failed to delete file from Cloudinary: {} {}", newResume.getCloudinaryPublicId(), cloudExp);
             }
@@ -123,9 +128,9 @@ public class ResumeServiceImpl implements ResumeService {
             return cloudinary.uploader().upload(
                 resume.getBytes(), 
                 ObjectUtils.asMap(
-                    "folder", "resume/", // puts every resume in the resume folder
-                    "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename(), // sets unique id for each file in cloudinary
-                    "resource_type", "auto" // automatically detects the file type
+                    "folder", "resume", // puts every resume in the resume folder
+                    "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename().replaceFirst("[.][^.]+$", ""), // sets unique id for each file in cloudinary
+                    "resource_type", "raw" // automatically detects the file type
                 )
             );
             
@@ -161,6 +166,21 @@ public class ResumeServiceImpl implements ResumeService {
         
     }
 
+    private String getResumeUrlFromUpload(String publicId, String version) {
+
+        String cloudinaryCloudName = cloudinary.config.cloudName;
+        
+        StringBuilder resumeUrl = new StringBuilder("https://res.cloudinary.com/");
+        resumeUrl.append(cloudinaryCloudName);
+        resumeUrl.append("/raw/upload/v");
+        resumeUrl.append(version);
+        resumeUrl.append("/");
+        resumeUrl.append(publicId);
+
+        return resumeUrl.toString();
+
+    }
+
     @Override
     public void deleteAResume(long id) throws EntityNotFoundException {
         
@@ -175,7 +195,7 @@ public class ResumeServiceImpl implements ResumeService {
         // Trys to delete resume from cloudinary
         try {
             logger.info("Deleting file from Cloudinary: {}", resume.getCloudinaryPublicId());
-            cloudinary.uploader().destroy(resume.getCloudinaryPublicId(), ObjectUtils.emptyMap());
+            cloudinary.uploader().destroy(resume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", "raw"));
         } catch (Exception e) {
             logger.warn("Failed to delete file from Cloudinary: {} {}", resume.getCloudinaryPublicId(), e);
         }
