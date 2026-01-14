@@ -28,5 +28,10 @@
     "name": "cloudinary.url",
     "type": "java.lang.String",
     "description": "A description for 'cloudinary.url'"
+  },
+  {
+    "name": "cloudinary.cloud-name",
+    "type": "java.lang.String",
+    "description": "A description for 'cloudinary.cloud-name'"
   }
 ]}
