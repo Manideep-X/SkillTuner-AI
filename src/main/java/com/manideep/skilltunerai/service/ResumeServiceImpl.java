@@ -82,8 +82,9 @@ public class ResumeServiceImpl implements ResumeService {
 
         // Gets the proper resume URL
         String publicId = uploadDetails.get("public_id").toString();
-        String version = uploadDetails.get("version").toString();
-        String resumeUrl = getResumeUrlFromUpload(publicId, version);
+        // String version = uploadDetails.get("version").toString();
+        // String resumeUrl = getResumeUrlFromUpload(publicId, version);
+        String resumeUrl = uploadDetails.get("secure_url").toString();
 
         // Map the resume request DTO to the resume entity
         Resume newResume = resumeMapper.resumeReqToResumeObj(
@@ -166,20 +167,20 @@ public class ResumeServiceImpl implements ResumeService {
         
     }
 
-    private String getResumeUrlFromUpload(String publicId, String version) {
+    // private String getResumeUrlFromUpload(String publicId, String version) {
 
-        String cloudinaryCloudName = cloudinary.config.cloudName;
+    //     String cloudinaryCloudName = cloudinary.config.cloudName;
         
-        StringBuilder resumeUrl = new StringBuilder("https://res.cloudinary.com/");
-        resumeUrl.append(cloudinaryCloudName);
-        resumeUrl.append("/raw/upload/v");
-        resumeUrl.append(version);
-        resumeUrl.append("/");
-        resumeUrl.append(publicId);
+    //     StringBuilder resumeUrl = new StringBuilder("https://res.cloudinary.com/");
+    //     resumeUrl.append(cloudinaryCloudName);
+    //     resumeUrl.append("/raw/upload/v");
+    //     resumeUrl.append(version);
+    //     resumeUrl.append("/");
+    //     resumeUrl.append(publicId);
 
-        return resumeUrl.toString();
+    //     return resumeUrl.toString();
 
-    }
+    // }
 
     @Override
     public void deleteAResume(long id) throws EntityNotFoundException {
