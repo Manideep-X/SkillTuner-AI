@@ -130,8 +130,7 @@ public class ResumeServiceImpl implements ResumeService {
                 ObjectUtils.asMap(
                     "folder", "resume", // puts every resume in the resume folder
                     "resource_type", isItPDF ? "image" : "raw", // file type: image for pdf, and raw for docx/doc
-                    "use_filename", true, // puts filename except extension as the public ID
-                    "unique_filename", true, // makes the filename unique if duplicates are present
+                    "public_id", isItPDF ? System.currentTimeMillis()+"_"+resume.getOriginalFilename().replaceFirst("[.][^.]+$", "") : System.currentTimeMillis()+"_"+resume.getOriginalFilename(), // sets unique id for each file in cloudinary
                     "access_mode", "public" // this makes the file viewable
                 )
             );
