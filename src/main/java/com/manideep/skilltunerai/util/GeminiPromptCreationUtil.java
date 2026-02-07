@@ -9,8 +9,8 @@ public class GeminiPromptCreationUtil {
         // Instructing AI to be an recruiter and adding the resume
         StringBuilder prompt = new StringBuilder();
         prompt
-            .append("You are an expert recruitment AI.")
-            .append("Here is a candidate's resume:\n")
+            .append("You are an expert recruitment AI checking a candidate personally.")
+            .append("Here is the candidate's resume:\n")
             .append(resumeContent).append("\n\n")
             .append("Here is a job description:\n");
         

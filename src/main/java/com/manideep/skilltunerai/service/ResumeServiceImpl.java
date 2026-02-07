@@ -68,9 +68,9 @@ public class ResumeServiceImpl implements ResumeService {
             throw new FileLoadingException("Error occured while reading the uploaded file!");
         }
         String fileExtention = fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
-        if (!(  fileExtention.equals("pdf") || 
-                fileExtention.equals("doc") || 
-                fileExtention.equals("docx"))
+        if (!(  fileExtention.equalsIgnoreCase("pdf") || 
+                fileExtention.equalsIgnoreCase("doc") || 
+                fileExtention.equalsIgnoreCase("docx"))
         )
             throw new IllegalArgumentException("Only PDF, DOC, and DOCX file extensions are supported!");
             
@@ -78,12 +78,11 @@ public class ResumeServiceImpl implements ResumeService {
         String resumeContent = parseTheResume(resumeRequestDTO.getResumeFile(), fileExtention);
 
         // Uploading the resume to Cloudinary and obtaining details
-        Map<String, Object> uploadDetails = uploadResume(resumeRequestDTO.getResumeFile());
+        Map<String, Object> uploadDetails = uploadResume(resumeRequestDTO.getResumeFile(), fileExtention.equalsIgnoreCase("pdf"));
 
-        // Gets the proper resume URL
+        // Gets the proper public ID of the uploaded resume
         String publicId = uploadDetails.get("public_id").toString();
-        // String version = uploadDetails.get("version").toString();
-        // String resumeUrl = getResumeUrlFromUpload(publicId, version);
+        // Gets the proper resume URL
         String resumeUrl = uploadDetails.get("secure_url").toString();
 
         // Map the resume request DTO to the resume entity
@@ -111,7 +110,7 @@ public class ResumeServiceImpl implements ResumeService {
             // Trys to delete resume from cloudinary
             try {
                 logger.info("Deleting file from Cloudinary: {}", newResume.getCloudinaryPublicId());
-                cloudinary.uploader().destroy(newResume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", "raw"));
+                cloudinary.uploader().destroy(newResume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", fileExtention.equalsIgnoreCase("pdf") ? "image" : "raw"));
             } catch (Exception cloudExp) {
                 logger.error("Failed to delete file from Cloudinary: {} {}", newResume.getCloudinaryPublicId(), cloudExp);
             }
@@ -123,15 +122,17 @@ public class ResumeServiceImpl implements ResumeService {
 
     // Method to upload the resume to Cloudinary and return the details including URL
     @SuppressWarnings("unchecked")
-    private Map<String, Object> uploadResume(MultipartFile resume) throws FileUploadException {
+    private Map<String, Object> uploadResume(MultipartFile resume, Boolean isItPDF) throws FileUploadException {
 
         try {
             return cloudinary.uploader().upload(
                 resume.getBytes(), 
                 ObjectUtils.asMap(
                     "folder", "resume", // puts every resume in the resume folder
-                    "public_id", System.currentTimeMillis()+"_"+resume.getOriginalFilename().replaceFirst("[.][^.]+$", ""), // sets unique id for each file in cloudinary
-                    "resource_type", "raw" // automatically detects the file type
+                    "resource_type", isItPDF ? "image" : "raw", // file type: image for pdf, and raw for docx/doc
+                    "use_filename", true, // puts filename except extension as the public ID
+                    "unique_filename", true, // makes the filename unique if duplicates are present
+                    "access_mode", "public" // this makes the file viewable
                 )
             );
             
@@ -167,21 +168,6 @@ public class ResumeServiceImpl implements ResumeService {
         
     }
 
-    // private String getResumeUrlFromUpload(String publicId, String version) {
-
-    //     String cloudinaryCloudName = cloudinary.config.cloudName;
-        
-    //     StringBuilder resumeUrl = new StringBuilder("https://res.cloudinary.com/");
-    //     resumeUrl.append(cloudinaryCloudName);
-    //     resumeUrl.append("/raw/upload/v");
-    //     resumeUrl.append(version);
-    //     resumeUrl.append("/");
-    //     resumeUrl.append(publicId);
-
-    //     return resumeUrl.toString();
-
-    // }
-
     @Override
     public void deleteAResume(long id) throws EntityNotFoundException {
         
@@ -195,8 +181,9 @@ public class ResumeServiceImpl implements ResumeService {
 
         // Trys to delete resume from cloudinary
         try {
+            Boolean isItPDF = resume.getResumeExtension().equalsIgnoreCase("pdf");
             logger.info("Deleting file from Cloudinary: {}", resume.getCloudinaryPublicId());
-            cloudinary.uploader().destroy(resume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", "raw"));
+            cloudinary.uploader().destroy(resume.getCloudinaryPublicId(), ObjectUtils.asMap("resource_type", isItPDF ? "image" : "raw"));
         } catch (Exception e) {
             logger.warn("Failed to delete file from Cloudinary: {} {}", resume.getCloudinaryPublicId(), e);
         }
